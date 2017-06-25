@@ -1,0 +1,63 @@
+version: "3"
+services:
+
+  # Chassis API
+  #---------------------------------------------------------------------------------------------------------------------
+  chassis:
+    container_name: chassis
+    build: .
+    ports:
+      - "7000:80"
+    volumes:
+      - .:/server/http
+    environment:
+      APP_DEBUG: "true"
+      LOG_DEBUG: "true"
+      LOG_DIR: /var/log/chassis
+      LOG_LOGSTASH: "false"
+      DATABASE_URL: postgres://chassis:chassis@postgres/chassis?sslmode=disable&client_encoding=UTF8
+      AMQP_HOST: rabbitmq
+      AMQP_PORT: 5672
+      AMQP_VHOST: /
+      AMQP_USER: guest
+      AMQP_PASSWORD: guest
+      PRINTNODE_APIKEY:
+      REDIS_SERVER: redis
+    links:
+      - postgres
+      - rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  # Postgres
+  #---------------------------------------------------------------------------------------------------------------------
+  postgres:
+    container_name: postgres
+    image: postgres:9.5
+    ports:
+      - "5432:5432"
+    environment:
+      LC_ALL: C.UTF-8
+      POSTGRES_USER: chassis
+      POSTGRES_PASSWORD: chassis
+      POSTGRES_DB: chassis
+
+  # RabbitMQ
+  #---------------------------------------------------------------------------------------------------------------------
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.6-management
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  # Redis
+  #---------------------------------------------------------------------------------------------------------------------
+  redis:
+    container_name: redis
+    image: redis:3.0.7
