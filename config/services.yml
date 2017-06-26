@@ -1,2 +1,12 @@
 imports:
   - { resource: services/presentation.yml }
+
+services:
+
+  _instanceof:
+    # Add the console.command tag to all services defined in this file having this type
+    Symfony\Component\DependencyInjection\ContainerInterface:
+      tags: [ 'container' ]
+
+  container:
+    synthetic: true
