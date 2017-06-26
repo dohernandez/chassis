@@ -4,7 +4,6 @@ namespace Chassis\Presentation\HTTP\Controller;
 
 use Chassis\Infrastructure\HTTP\Action;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Main index page
@@ -12,10 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 final class IndexAction extends Action
 {
     /**
-     * {@inheritdoc}
+     * @param Request $request
+     * @param array $args
+     *
+     * @return mixed
      */
-    public function __exec(Request $request, Response $response, array $args): Response
+    public function __invoke(Request $request, array $args)
     {
-        return $response->setContent(sprintf('Hello %s', 'Word'));
+        return 'Welcome to chassis';
     }
 }

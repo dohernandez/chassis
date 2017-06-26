@@ -5,9 +5,16 @@ imports:
 services:
 
   _instanceof:
-    # Add the console.command tag to all services defined in this file having this type
+    # Add the app.container tag to all services defined in this file having this type
     Symfony\Component\DependencyInjection\ContainerInterface:
       tags: [ 'app.container' ]
 
+    Chassis\Infrastructure\HTTP\ControllerInterface:
+      tags: [ 'app.controller' ]
+
   app.container:
     synthetic: true
+
+  app.controller:
+    class: Chassis\Infrastructure\HTTP\Controller
+    arguments: [ '@app.container' ]

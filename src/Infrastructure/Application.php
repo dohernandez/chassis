@@ -2,9 +2,8 @@
 
 namespace Chassis\Infrastructure;
 
+use Chassis\Infrastructure\HTTP\Controller;
 use Chassis\Infrastructure\Routing\Route;
-use Chassis\Infrastructure\HTTP\Action;
-use Chassis\Infrastructure\HTTP\ActionInterface;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Psr\Log\LoggerInterface;
@@ -32,6 +31,7 @@ class Application
     public function __construct(ContainerBuilder $builder)
     {
         $this->routes = [];
+
         $this->container = $builder->build();
     }
 
@@ -182,14 +182,9 @@ class Application
         }
 
         if ($routeInfo[0] == Dispatcher::FOUND) {
-            $action = $this->getAction($routeInfo[1]);
-            $vars = $routeInfo[2];
+            $controller = $this->getController();
 
-            if ($action instanceof ActionInterface) {
-                $this->getLooger()->debug(sprintf('Invoke action "%s"', $action));
-
-                return $action->__invoke($request, new Response('', Response::HTTP_OK), $vars);
-            }
+            return $controller->__invoke($request, $routeInfo[1], $routeInfo[2]);
 
         }
 
@@ -197,18 +192,10 @@ class Application
     }
 
     /**
-     * @param string $action Action identifier.
-     *
-     * @return ActionInterface
+     * @return Controller
      */
-    protected function getAction(string $action): ActionInterface
+    protected function getController(): Controller
     {
-        $action = $this->getContainer()->get($action);
-
-        if (!$action instanceof ActionInterface) {
-            throw new \LogicException("Action `$action` must implement `" . Action::class . "`.");
-        }
-
-        return $action;
+        return $this->getContainer()->get('app.controller');
     }
 }

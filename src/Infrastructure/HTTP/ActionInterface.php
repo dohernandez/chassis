@@ -3,7 +3,6 @@
 namespace Chassis\Infrastructure\HTTP;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Represents an HTTP action
@@ -12,10 +11,9 @@ interface ActionInterface
 {
     /**
      * @param Request $request
-     * @param Response $response
      * @param array $args
      *
-     * @return Response
+     * @return mixed
      */
-    public function __invoke(Request $request, Response $response, array $args) : Response;
+    public function __invoke(Request $request, array $args);
 }

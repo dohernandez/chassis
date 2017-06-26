@@ -112,6 +112,7 @@ class ContainerBuilder
         ));
 
         $container->compile(true);
+        $container->set('app.container', $container);
 
         return $container;
     }
