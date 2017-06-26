@@ -9,17 +9,29 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\DependencyInjection\ContainerBuilder as Container;
+
 
 class Application
 {
+
     /**
      * @var Route[]
      */
     protected $routes;
 
-    public function __construct()
+    /**
+     * @var ContainerBuilder
+     */
+    private $container;
+
+    /**
+     * @param ContainerBuilder $builder
+     */
+    public function __construct(ContainerBuilder $builder)
     {
         $this->routes = [];
+        $this->container = $builder->buildContainer();
     }
 
     /**
@@ -151,7 +163,7 @@ class Application
         }
 
         if ($routeInfo[0] == Dispatcher::FOUND) {
-            $action = $this->resolveAction($routeInfo[1]);
+            $action = $this->getAction($routeInfo[1]);
             $vars = $routeInfo[2];
 
             if ($action instanceof ActionInterface) {
@@ -168,16 +180,22 @@ class Application
      *
      * @return ActionInterface
      */
-    public function resolveAction(string $action): ActionInterface
+    protected function getAction(string $action): ActionInterface
     {
-//        $controller = $this->container->get($id);
-
-        $action = new $action();
+        $action = $this->getContainer()->get($action);
 
         if (!$action instanceof ActionInterface) {
             throw new \LogicException("Action `$action` must implement `" . Action::class . "`.");
         }
 
         return $action;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
     }
 }

@@ -1,0 +1,8 @@
+services:
+
+  _defaults:
+    autowire: true
+    public: true
+
+  action.index:
+    class: Chassis\Presentation\HTTP\Controller\IndexAction
