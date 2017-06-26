@@ -3,7 +3,8 @@
 namespace Chassis\Application;
 
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection;
+use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 
 
@@ -66,11 +67,14 @@ class ContainerBuilder
         $this->cachePath = sprintf('%s/storage/cache', $this->appPath);
         $this->containerClass = $containerClass;
         $this->ymlServices = $ymlServices;
-        $this->ymlServicesPath = sprintf('%s/%s', $this->configPath, $this->containerClass);
+        $this->ymlServicesPath = sprintf('%s/%s', $this->configPath, $this->ymlServices);
         $this->containerClassPath = sprintf('%s/%s.php', $this->configPath, $this->containerClass);
     }
 
-    public function buildContainer()
+    /**
+     * @return SymfonyContainerBuilder
+     */
+    public function buildContainer(): SymfonyContainerBuilder
     {
         if (!file_exists($this->containerClassPath)) {
             return $this->loadServicesFromYMLFile();
@@ -80,13 +84,13 @@ class ContainerBuilder
     }
 
     /**
-     * @return DependencyInjection\ContainerBuilder
+     * @return SymfonyContainerBuilder
      */
-    private function loadServicesFromYMLFile(): DependencyInjection\ContainerBuilder
+    private function loadServicesFromYMLFile(): SymfonyContainerBuilder
     {
-        $container = new DependencyInjection\ContainerBuilder();
-        $loader = new DependencyInjection\Loader\YamlFileLoader($container, new FileLocator(__DIR__));
-        $loader->load(sprintf('%s/services.yml', $this->configPath));
+        $container = new SymfonyContainerBuilder();
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
+        $loader->load($this->ymlServicesPath);
 
         $container->setParameter('app_dir', $this->appPath);
         $container->setParameter('base_dir', $this->basePath);
@@ -105,9 +109,9 @@ class ContainerBuilder
     }
 
     /**
-     * @return ContainerBuilder
+     * @return SymfonyContainerBuilder
      */
-    private function loadServicesFromContainerClass()
+    private function loadServicesFromContainerClass(): SymfonyContainerBuilder
     {
         require_once $this->containerClassPath;
 
