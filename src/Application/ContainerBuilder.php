@@ -19,6 +19,11 @@ class ContainerBuilder
     /**
      * @var string
      */
+    protected $appName;
+
+    /**
+     * @var string
+     */
     protected $basePath;
 
     /**
@@ -57,10 +62,12 @@ class ContainerBuilder
     protected $ymlServicesPath;
 
     public function __construct(
+        string $appName,
         string $basePath,
         string $ymlServices = self::DEFAULT_YML_SERVICES,
         string $containerClass = self::DEFAULT_CONTAINER_CLASS
     ) {
+        $this->appName = $appName;
         $this->basePath = $basePath;
         $this->appPath = sprintf('%s/app', $this->basePath);
         $this->configPath = sprintf('%s/config', $this->basePath);
@@ -74,7 +81,7 @@ class ContainerBuilder
     /**
      * @return SymfonyContainerBuilder
      */
-    public function buildContainer(): SymfonyContainerBuilder
+    public function build(): SymfonyContainerBuilder
     {
         if (!file_exists($this->containerClassPath)) {
             return $this->loadServicesFromYMLFile();
@@ -92,6 +99,7 @@ class ContainerBuilder
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
         $loader->load($this->ymlServicesPath);
 
+        $container->setParameter('app_name', $this->appName);
         $container->setParameter('app_dir', $this->appPath);
         $container->setParameter('base_dir', $this->basePath);
         $container->setParameter('cache_dir', $this->cachePath);
@@ -116,7 +124,7 @@ class ContainerBuilder
         require_once $this->containerClassPath;
 
         $container = new $this->containerClass;
-        $container->set('container', $container);
+        $container->set('app.container', $container);
 
         return $container;
     }

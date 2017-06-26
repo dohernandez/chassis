@@ -19,14 +19,18 @@ standards:
 
 db.migrate:
 	@printf "$(OK_COLOR)==> Migrating database...$(NO_COLOR)\n"
-	@docker-compose exec shipping-label-service bin/console mig:mig -n
+	@docker-compose exec chassis bin/console mig:mig -n
 
 db.reset:
 	@printf "$(OK_COLOR)==> Resetting database...$(NO_COLOR)\n"
-	@docker-compose exec shipping-label-service bin/console mig:mig first -n && bin/console mig:mig -n
+	@docker-compose exec chassis bin/console mig:mig first -n && bin/console mig:mig -n
 
 test:
 	@printf "$(OK_COLOR)==> Running unit tests...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app --network=shippinglabelservice_default averor/docker-phpunit-php-7.1 vendor/bin/phpunit --coverage-text=tests/coverage.txt
 	@printf "$(OK_COLOR)==> Running integration tests...$(NO_COLOR)\n"
-	@docker-compose exec shipping-label-service vendor/bin/behat
+	@docker-compose exec chassis vendor/bin/behat
+
+log:
+    @printf "$(OK_COLOR)==> Look at the log ...$(NO_COLOR)\n"
+    @docker-compose exec chassis "less /var/log/chassis/app.log"

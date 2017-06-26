@@ -7,6 +7,7 @@ use Chassis\Presentation\HTTP\Action;
 use Chassis\Presentation\HTTP\ActionInterface;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerBuilder as Container;
@@ -31,7 +32,7 @@ class Application
     public function __construct(ContainerBuilder $builder)
     {
         $this->routes = [];
-        $this->container = $builder->buildContainer();
+        $this->container = $builder->build();
     }
 
     /**
@@ -101,9 +102,27 @@ class Application
     {
         $request = $this->getRequest($request);
 
+        $this->getLooger()->debug(sprintf('Requesting the end point %s', $request->getUri()));
+
         $response = $this->dispatchRequest($request);
 
         return $response->send();
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    public function getLooger(): LoggerInterface
+    {
+        return $this->getContainer()->get('app.logger');
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
     }
 
     /**
@@ -167,6 +186,8 @@ class Application
             $vars = $routeInfo[2];
 
             if ($action instanceof ActionInterface) {
+                $this->getLooger()->debug(sprintf('Invoke action "%s"', $action));
+
                 return $action->__invoke($request, new Response('', Response::HTTP_OK), $vars);
             }
 
@@ -189,13 +210,5 @@ class Application
         }
 
         return $action;
-    }
-
-    /**
-     * @return Container
-     */
-    public function getContainer(): Container
-    {
-        return $this->container;
     }
 }

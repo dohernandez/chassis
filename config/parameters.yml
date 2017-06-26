@@ -1,0 +1,19 @@
+parameters:
+
+  app_name:
+    synthetic: true
+
+  app_dir:
+    synthetic: true
+
+  base_dir:
+    synthetic: true
+
+  cache_dir:
+    synthetic: true
+
+  config_dir:
+    synthetic: true
+
+  log_dir: "/var/log/%app_name%"
+  log_stream_name: "app"

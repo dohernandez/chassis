@@ -23,4 +23,9 @@ abstract class Action implements ActionInterface
      * @return Response
      */
     abstract protected function __exec(Request $request, Response $response, array $args): Response;
+
+    public function __toString()
+    {
+        return self::class;
+    }
 }
