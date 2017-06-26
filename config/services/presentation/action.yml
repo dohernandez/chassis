@@ -1,8 +1,13 @@
 services:
 
   _defaults:
+    # automatically injects dependencies in your services
     autowire: true
+    # this means you cannot fetch services directly from the container via $container->get()
+    # if you need to do this, you can override this setting on individual services
     public: true
 
-  action.index:
-    class: Chassis\Presentation\HTTP\Controller\IndexAction
+  Chassis\Presentation\HTTP\Controller\:
+    # makes classes in src/Presentation/HTTP/Controller available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    resource: '../../src/Presentation/HTTP/Controller/*'
