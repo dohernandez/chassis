@@ -1,3 +1,0 @@
-imports:
-  - { resource: presentation/action.yml }
-  - { resource: infrastructure/logger.yml }

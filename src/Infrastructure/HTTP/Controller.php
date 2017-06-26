@@ -4,21 +4,28 @@ namespace Chassis\Infrastructure\HTTP;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ContainerBuilder as Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Controller implements ControllerInterface
 {
     /**
-     * @var Container
+     * @var ContainerInterface
      */
     private $container;
 
     /**
-     * @param Container $container
+     * @var ResponseResolverInterface
      */
-    public function __construct(Container $container)
+    private $responseResolver;
+
+    /**
+     * @param ContainerInterface $container
+     * @param ResponseResolverInterface $responseResolver
+     */
+    public function __construct(ContainerInterface $container, ResponseResolverInterface $responseResolver)
     {
         $this->container = $container;
+        $this->responseResolver = $responseResolver;
     }
 
     /**
@@ -50,7 +57,7 @@ class Controller implements ControllerInterface
         $action = $this->container->get($action);
 
         if (!$action instanceof ActionInterface) {
-            throw new \LogicException("Action `$action` must implement `" . Action::class . "`.");
+            throw new \LogicException("Action `$action` must extends `" . Action::class . "`.");
         }
 
         return $action;
@@ -98,6 +105,6 @@ class Controller implements ControllerInterface
      */
     protected function respond($data = null, int $status = Response::HTTP_OK, array $headers = []): Response
     {
-        return new Response($data, !$data ? Response::HTTP_NO_CONTENT : $status, $headers);
+        return $this->responseResolver->resolve($data, $status, $headers);
     }
 }

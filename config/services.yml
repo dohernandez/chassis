@@ -1,6 +1,9 @@
 imports:
   - { resource: parameters.yml }
-  - { resource: services/presentation.yml }
+  - { resource: services/presentation/action.yml }
+  - { resource: services/infrastructure/logger.yml }
+  - { resource: services/infrastructure/http.yml }
+  - { resource: services/infrastructure/serialize.yml }
 
 services:
 
@@ -9,12 +12,5 @@ services:
     Symfony\Component\DependencyInjection\ContainerInterface:
       tags: [ 'app.container' ]
 
-    Chassis\Infrastructure\HTTP\ControllerInterface:
-      tags: [ 'app.controller' ]
-
   app.container:
     synthetic: true
-
-  app.controller:
-    class: Chassis\Infrastructure\HTTP\Controller
-    arguments: [ '@app.container' ]

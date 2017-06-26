@@ -3,8 +3,8 @@ services:
   _defaults:
     # automatically injects dependencies in your services
     autowire: true
-    # this means you cannot fetch services directly from the container via $container->get()
-    # if you need to do this, you can override this setting on individual services
+    # this means you can fetch services directly from the container via $container->get()
+    # if you don't need to do this, you can override this setting on individual services
     public: true
 
   Chassis\Infrastructure\Logger\LoggerBuilder: ~
@@ -14,4 +14,3 @@ services:
     class: Psr\Log\LoggerInterface
     factory: 'Chassis\Infrastructure\Logger\LoggerBuilder:build'
     arguments: ['%log_stream_name%', '%log_dir%']
-    public: true

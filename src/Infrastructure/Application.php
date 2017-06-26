@@ -9,7 +9,7 @@ use FastRoute\RouteCollector;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ContainerBuilder as Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
 class Application
@@ -118,9 +118,9 @@ class Application
     }
 
     /**
-     * @return Container
+     * @return ContainerInterface
      */
-    public function getContainer(): Container
+    public function getContainer(): ContainerInterface
     {
         return $this->container;
     }
@@ -182,7 +182,7 @@ class Application
         }
 
         if ($routeInfo[0] == Dispatcher::FOUND) {
-            $controller = $this->getController();
+            $controller = $this->getController($routeInfo[1]);
 
             return $controller->__invoke($request, $routeInfo[1], $routeInfo[2]);
 
@@ -192,10 +192,14 @@ class Application
     }
 
     /**
+     * @param string $action
+     *
      * @return Controller
      */
-    protected function getController(): Controller
+    protected function getController(string $action = null): Controller
     {
-        return $this->getContainer()->get('app.controller');
+        $containerId = $action ? sprintf('app.controller[%s]', $action) : 'app.controller';
+
+        return $this->getContainer()->get($containerId);
     }
 }
