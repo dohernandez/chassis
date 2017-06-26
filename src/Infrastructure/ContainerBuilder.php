@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Application;
+namespace Chassis\Infrastructure;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
@@ -111,7 +111,7 @@ class ContainerBuilder
             self::EVENT_SUBSCRIBER_TAG
         ));
 
-        $container->compile();
+        $container->compile(true);
 
         return $container;
     }

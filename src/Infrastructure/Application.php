@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Application;
+namespace Chassis\Infrastructure;
 
-use Chassis\Application\Routing\Route;
+use Chassis\Infrastructure\Routing\Route;
 use Chassis\Presentation\HTTP\Action;
 use Chassis\Presentation\HTTP\ActionInterface;
 use FastRoute\Dispatcher;

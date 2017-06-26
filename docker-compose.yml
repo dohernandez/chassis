@@ -11,9 +11,10 @@ services:
     volumes:
       - .:/server/http
     environment:
+      APP_NAME: "chassis"
       APP_DEBUG: "true"
       LOG_DEBUG: "true"
-      LOG_DIR: /var/log/chassis
+      LOG_DIR: /var/log/
       LOG_LOGSTASH: "false"
       DATABASE_URL: postgres://chassis:chassis@postgres/chassis?sslmode=disable&client_encoding=UTF8
       AMQP_HOST: rabbitmq

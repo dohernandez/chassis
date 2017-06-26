@@ -9,6 +9,14 @@ dependencies:
 	@printf "$(OK_COLOR)==> Installing dependencies...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 update --prefer-dist --no-interaction --optimize-autoloader --no-progress
 
+autoload.dependency: dependencies
+	@printf "$(OK_COLOR)==> Dump dependencies ...$(NO_COLOR)\n"
+	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 dump-autoload
+
+tail.log:
+	@printf "$(OK_COLOR)==> Tail log file ...$(NO_COLOR)\n"
+	@docker-compose exec chassis tail /var/log/chassis/app.log
+
 standards:
 	@printf "$(OK_COLOR)==> Checking code standards...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app rcrosby256/php-cs-fixer fix --dry-run --diff
@@ -30,7 +38,3 @@ test:
 	@docker run -it --rm -v $(PWD):/app -w /app --network=shippinglabelservice_default averor/docker-phpunit-php-7.1 vendor/bin/phpunit --coverage-text=tests/coverage.txt
 	@printf "$(OK_COLOR)==> Running integration tests...$(NO_COLOR)\n"
 	@docker-compose exec chassis vendor/bin/behat
-
-log:
-    @printf "$(OK_COLOR)==> Look at the log ...$(NO_COLOR)\n"
-    @docker-compose exec chassis "less /var/log/chassis/app.log"

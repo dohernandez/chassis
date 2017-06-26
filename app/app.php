@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
-$chassis = new \Chassis\Application\Application(
-    new \Chassis\Application\ContainerBuilder('chassis', __DIR__ . DIRECTORY_SEPARATOR . '..')
+$chassis = new \Chassis\Infrastructure\Application(
+    new \Chassis\Infrastructure\ContainerBuilder('chassis', __DIR__ . DIRECTORY_SEPARATOR . '..')
 );
 
 return $chassis;

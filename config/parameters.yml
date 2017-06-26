@@ -1,7 +1,6 @@
 parameters:
 
-  app_name:
-    synthetic: true
+  app_name: "%env(LOG_DIR)%"
 
   app_dir:
     synthetic: true
@@ -15,5 +14,5 @@ parameters:
   config_dir:
     synthetic: true
 
-  log_dir: "%env(LOG_DIR)%"
+  log_dir: "%env(LOG_DIR)%/%app_name%"
   log_stream_name: "app"
