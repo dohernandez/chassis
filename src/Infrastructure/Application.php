@@ -3,8 +3,8 @@
 namespace Chassis\Infrastructure;
 
 use Chassis\Infrastructure\Routing\Route;
-use Chassis\Presentation\HTTP\Action;
-use Chassis\Presentation\HTTP\ActionInterface;
+use Chassis\Infrastructure\HTTP\Action;
+use Chassis\Infrastructure\HTTP\ActionInterface;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Psr\Log\LoggerInterface;
