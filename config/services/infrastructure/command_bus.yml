@@ -1,7 +1,26 @@
-parameters:
-  command_bus.middleware: []
-
 services:
 
+  _defaults:
+    # automatically injects dependencies in your services
+    autowire: true
+    # this means you cannot fetch services directly from the container via $container->get()
+    # if you need to do this, you can override this setting on individual services
+    public: false
+
+  League\Tactician\Handler\CommandHandlerMiddleware: ~
+  League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor: ~
+  League\Tactician\Handler\MethodNameInflector\HandleInflector: ~
+
+  # here defined you command handler
+  Chassis\Domain\IndexHandler: ~
+
+
+  League\Tactician\Handler\Locator\InMemoryLocator:
+    arguments:
+      $commandClassToHandlerMap:
+        # here register the commands
+        Chassis\Application\Command\IndexCommand: '@Chassis\Domain\IndexHandler'
+
   League\Tactician\CommandBus:
-    arguments: [ '%command_bus.middleware%' ]
+    arguments: [ ['@League\Tactician\Handler\CommandHandlerMiddleware'] ]
+    autowire: false

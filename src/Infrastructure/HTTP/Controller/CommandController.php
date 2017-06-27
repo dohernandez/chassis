@@ -51,6 +51,6 @@ abstract class CommandController extends Controller
      */
     protected function dispatchCommand($command)
     {
-        return $this->commandBus->dispatch($command);
+        return $this->commandBus->handle($command);
     }
 }
