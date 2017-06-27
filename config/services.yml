@@ -4,6 +4,7 @@ imports:
   - { resource: services/infrastructure/logger.yml }
   - { resource: services/infrastructure/http.yml }
   - { resource: services/infrastructure/serialize.yml }
+  - { resource: services/infrastructure/command_bus.yml }
 
 services:
 

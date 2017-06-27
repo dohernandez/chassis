@@ -2,8 +2,6 @@
 
 namespace Chassis\Infrastructure\HTTP\Controller;
 
-use Chassis\Infrastructure\HTTP\Action\Action;
-use Chassis\Infrastructure\HTTP\Action\ActionInterface;
 use Chassis\Infrastructure\HTTP\Event\AfterActionEvent;
 use Chassis\Infrastructure\HTTP\Event\BeforeActionEvent;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
@@ -17,7 +15,7 @@ abstract class Controller implements ControllerInterface
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    private $container;
 
     /**
      * @var ResponseResolverInterface
@@ -46,11 +44,33 @@ abstract class Controller implements ControllerInterface
 
     /**
      * @param Request $request
+     * @param string $action
+     * @param array $pathParams
+     *
+     * @return Response
+     */
+    final public function __invoke(Request $request, string $action, array $pathParams): Response
+    {
+        $params = $this->resolveParams($request, $pathParams);
+
+        $this->beforeAction($action, $request);
+
+        $data = $this->run($request, $action, $params);
+
+        $response = $this->resolveResponse($data);
+
+        $this->afterAction($action, $response);
+
+        return $response;
+    }
+
+    /**
+     * @param Request $request
      * @param array $pathParams
      *
      * @return array
      */
-    protected function resolveParams(Request $request, array $pathParams): array
+    private function resolveParams(Request $request, array $pathParams): array
     {
         $params = $request->getContentType() === 'json'
             ? (array) json_decode($request->getContent(), true)
@@ -72,11 +92,20 @@ abstract class Controller implements ControllerInterface
     }
 
     /**
+     * @param Request $request
+     * @param string $action
+     * @param array $params
+     *
+     * @return mixed
+     */
+    abstract protected function run(Request $request, string $action, array $params);
+
+    /**
      * @param mixed $data
      *
      * @return Response
      */
-    protected function resolveResponse($data): Response
+    private function resolveResponse($data): Response
     {
         if ($data instanceof Response) {
             return $data;
@@ -111,5 +140,13 @@ abstract class Controller implements ControllerInterface
             AfterActionEvent::NAME,
             new AfterActionEvent($action, $response)
         );
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
     }
 }

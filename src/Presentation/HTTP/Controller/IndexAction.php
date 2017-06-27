@@ -18,6 +18,6 @@ final class IndexAction extends Action
      */
     public function __invoke(Request $request, array $args)
     {
-        return 'Welcome to chassis';
+        return 'Welcome to action chassis';
     }
 }

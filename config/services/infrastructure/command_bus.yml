@@ -1,0 +1,7 @@
+parameters:
+  command_bus.middleware: []
+
+services:
+
+  League\Tactician\CommandBus:
+    arguments: [ '%command_bus.middleware%' ]

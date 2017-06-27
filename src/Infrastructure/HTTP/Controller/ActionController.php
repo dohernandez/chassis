@@ -5,33 +5,21 @@ namespace Chassis\Infrastructure\HTTP\Controller;
 use Chassis\Infrastructure\HTTP\Action\Action;
 use Chassis\Infrastructure\HTTP\Action\ActionInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class ActionController extends Controller
 {
     /**
      * @param Request $request
      * @param string $action
-     * @param array $pathParams
+     * @param array $params
      *
-     * @return Response
+     * @return mixed
      */
-    final public function __invoke(Request $request, string $action, array $pathParams): Response
+    protected function run(Request $request, string $action, array $params)
     {
-        $strAction = $action;
+        $action = $this->resolveAction($action);
 
-        $action = $this->resolveAction($strAction);
-        $params = $this->resolveParams($request, $pathParams);
-
-        $this->beforeAction($strAction, $request);
-
-        $data = $action->__invoke($request, $params);
-
-        $response = $this->resolveResponse($data);
-
-        $this->afterAction($strAction, $response);
-
-        return $response;
+        return $action->__invoke($request, $params);
     }
 
     /**
@@ -41,7 +29,7 @@ class ActionController extends Controller
      */
     protected function resolveAction(string $action): ActionInterface
     {
-        $action = $this->container->get($action);
+        $action = $this->getContainer()->get($action);
 
         if (!$action instanceof ActionInterface) {
             throw new \LogicException("Action `$action` must extends `" . Action::class . "`.");

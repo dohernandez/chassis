@@ -27,5 +27,5 @@ services:
     public: true
 
   app.controller[Chassis\Presentation\HTTP\Controller\IndexAction]:
-    class: Chassis\Infrastructure\HTTP\Controller\ActionController
+    class: Chassis\Presentation\HTTP\Controller\IndexController
     public: true

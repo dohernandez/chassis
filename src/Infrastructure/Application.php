@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure;
 
-use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
+use Chassis\Infrastructure\HTTP\Controller\CommandController;
 use Chassis\Infrastructure\Routing\Route;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Application
 {
+    const CONTROLLER_METHOD_SEPARATOR = '#';
 
     /**
      * @var Route[]
@@ -182,28 +183,44 @@ class Application
         }
 
         if ($routeInfo[0] == Dispatcher::FOUND) {
-            $controller = $this->getController($routeInfo[1]);
-
-            return $controller->__invoke($request, $routeInfo[1], $routeInfo[2]);
-
+            return $this->runAction($request, $routeInfo);
         }
 
         return new Response('', Response::HTTP_NOT_FOUND);
     }
 
     /**
-     * @param string $action
+     * @param Request $request
+     * @param array $routeInfo
      *
-     * @return ControllerInterface
+     * @return Response
      */
-    protected function getController(string $action = null): ControllerInterface
+    protected function runAction(Request $request, array $routeInfo)
     {
-        $containerId = sprintf('app.controller[%s]', $action);
+        list($controller, $method) = $this->getController($routeInfo[1]);
 
-        if ($this->getContainer()->has($containerId)) {
-            return $this->getContainer()->get($containerId);
+        if ($controller instanceof CommandController) {
+            return $controller->__invoke($request, $method, $routeInfo[2]);
         }
 
-        return $this->getContainer()->get('app.controller');
+        return $controller->__invoke($request, $routeInfo[1], $routeInfo[2]);
+    }
+
+    /**
+     * @param string $action
+     *
+     * @return array
+     */
+    protected function getController(string $action = null): array
+    {
+        list($controller, $method) = explode(self::CONTROLLER_METHOD_SEPARATOR, $action) + [ 1 => 'index' ];
+
+        $containerId = sprintf('app.controller[%s]', $controller);
+
+        if ($this->getContainer()->has($containerId)) {
+            return [ $this->getContainer()->get($containerId), $method ];
+        }
+
+        return [ $this->getContainer()->get('app.controller'), $method ];
     }
 }
