@@ -12,5 +12,11 @@ services:
     Symfony\Component\DependencyInjection\ContainerInterface:
       tags: [ 'app.container' ]
 
+    Symfony\Component\EventDispatcher\EventDispatcherInterface:
+      tags: [ 'event_dispatcher' ]
+
   app.container:
     synthetic: true
+
+  event_dispatcher:
+    class: Symfony\Component\EventDispatcher\EventDispatcher

@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Infrastructure\HTTP;
+namespace Chassis\Infrastructure\HTTP\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

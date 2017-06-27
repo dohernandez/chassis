@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure;
 
-use Chassis\Infrastructure\HTTP\Controller;
+use Chassis\Infrastructure\HTTP\Controller\Controller;
 use Chassis\Infrastructure\Routing\Route;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;

@@ -2,7 +2,7 @@
 
 namespace Chassis\Presentation\HTTP\Controller;
 
-use Chassis\Infrastructure\HTTP\Action;
+use Chassis\Infrastructure\HTTP\Action\Action;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

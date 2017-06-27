@@ -9,19 +9,22 @@ services:
 
   _instanceof:
     # Add the app.controller tag to all services defined in this file having this type
-    Chassis\Infrastructure\HTTP\ControllerInterface:
+    Chassis\Infrastructure\HTTP\Controller\ControllerInterface:
       tags: [ 'app.controller' ]
 
 
-  Chassis\Infrastructure\HTTP\ResponseResolver: ~
+  Chassis\Infrastructure\HTTP\Response\ResponseResolver: ~
 
-  Chassis\Infrastructure\HTTP\ResponseResolverInterface: '@Chassis\Infrastructure\HTTP\ResponseResolver'
+  Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface: '@Chassis\Infrastructure\HTTP\Response\ResponseResolver'
+
+  Chassis\Infrastructure\HTTP\Subscriber\ActionSubscriber:
+    tags: [ 'event_subscriber' ]
 
 
   app.controller:
-    class: Chassis\Infrastructure\HTTP\Controller
+    class: Chassis\Infrastructure\HTTP\Controller\Controller
     public: true
 
   app.controller[Chassis\Presentation\HTTP\Controller\IndexAction]:
-    class: Chassis\Infrastructure\HTTP\Controller
+    class: Chassis\Infrastructure\HTTP\Controller\Controller
     public: true

@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Infrastructure\HTTP;
+namespace Chassis\Infrastructure\HTTP\Response;
 
 use Chassis\Infrastructure\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -1,12 +1,14 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Infrastructure\Event;
+namespace Chassis\Infrastructure\HTTP\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
 
 class BeforeActionEvent extends Event
 {
+    const NAME = 'http.before.action';
+
     /**
      * @var string
      */

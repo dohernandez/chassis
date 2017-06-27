@@ -1,10 +1,16 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Infrastructure\HTTP;
+namespace Chassis\Infrastructure\HTTP\Controller;
 
+use Chassis\Infrastructure\HTTP\Action\Action;
+use Chassis\Infrastructure\HTTP\Action\ActionInterface;
+use Chassis\Infrastructure\HTTP\Event\AfterActionEvent;
+use Chassis\Infrastructure\HTTP\Event\BeforeActionEvent;
+use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Controller implements ControllerInterface
 {
@@ -19,13 +25,23 @@ class Controller implements ControllerInterface
     private $responseResolver;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @param ContainerInterface $container
      * @param ResponseResolverInterface $responseResolver
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(ContainerInterface $container, ResponseResolverInterface $responseResolver)
-    {
+    public function __construct(
+        ContainerInterface $container,
+        ResponseResolverInterface $responseResolver,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->container = $container;
         $this->responseResolver = $responseResolver;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -37,12 +53,18 @@ class Controller implements ControllerInterface
      */
     final public function __invoke(Request $request, string $action, array $pathParams): Response
     {
-        $action = $this->resolveAction($action);
+        $strAction = $action;
+
+        $action = $this->resolveAction($strAction);
         $params = $this->resolveParams($request, $pathParams);
+
+        $this->beforeAction($strAction, $request);
 
         $data = $action->__invoke($request, $params);
 
         $response = $this->resolveResponse($data);
+
+        $this->afterAction($strAction, $response);
 
         return $response;
     }
@@ -79,6 +101,18 @@ class Controller implements ControllerInterface
     }
 
     /**
+     * @param string $action
+     * @param Request $request
+     */
+    protected function beforeAction(string $action, Request $request)
+    {
+        $this->eventDispatcher->dispatch(
+            BeforeActionEvent::NAME,
+            new BeforeActionEvent($action, $request)
+        );
+    }
+
+    /**
      * @param mixed $data
      *
      * @return Response
@@ -106,5 +140,17 @@ class Controller implements ControllerInterface
     protected function respond($data = null, int $status = Response::HTTP_OK, array $headers = []): Response
     {
         return $this->responseResolver->resolve($data, $status, $headers);
+    }
+
+    /**
+     * @param string $action
+     * @param Response $response
+     */
+    protected function afterAction(string $action, Response $response)
+    {
+        $this->eventDispatcher->dispatch(
+            AfterActionEvent::NAME,
+            new AfterActionEvent($action, $response)
+        );
     }
 }
