@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure;
 
-use Chassis\Infrastructure\HTTP\Controller\Controller;
+use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use Chassis\Infrastructure\Routing\Route;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
@@ -18,7 +18,7 @@ class Application
     /**
      * @var Route[]
      */
-    protected $routes;
+    private $routes;
 
     /**
      * @var ContainerBuilder
@@ -194,12 +194,16 @@ class Application
     /**
      * @param string $action
      *
-     * @return Controller
+     * @return ControllerInterface
      */
-    protected function getController(string $action = null): Controller
+    protected function getController(string $action = null): ControllerInterface
     {
-        $containerId = $action ? sprintf('app.controller[%s]', $action) : 'app.controller';
+        $containerId = sprintf('app.controller[%s]', $action);
 
-        return $this->getContainer()->get($containerId);
+        if ($this->getContainer()->has($containerId)) {
+            return $this->getContainer()->get($containerId);
+        }
+
+        return $this->getContainer()->get('app.controller');
     }
 }

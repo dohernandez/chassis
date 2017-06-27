@@ -8,6 +8,6 @@ services:
     public: true
 
   Chassis\Presentation\HTTP\Controller\:
-    # makes classes in src/Presentation/HTTP/Controller available to be used as services
+    # makes classes in src/Presentation/HTTP/ActionController available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     resource: '../../src/Presentation/HTTP/Controller/*'

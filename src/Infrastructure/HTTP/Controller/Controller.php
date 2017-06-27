@@ -12,12 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class Controller implements ControllerInterface
+abstract class Controller implements ControllerInterface
 {
     /**
      * @var ContainerInterface
      */
-    private $container;
+    protected $container;
 
     /**
      * @var ResponseResolverInterface
@@ -46,52 +46,11 @@ class Controller implements ControllerInterface
 
     /**
      * @param Request $request
-     * @param string $action
-     * @param array $pathParams
-     *
-     * @return Response
-     */
-    final public function __invoke(Request $request, string $action, array $pathParams): Response
-    {
-        $strAction = $action;
-
-        $action = $this->resolveAction($strAction);
-        $params = $this->resolveParams($request, $pathParams);
-
-        $this->beforeAction($strAction, $request);
-
-        $data = $action->__invoke($request, $params);
-
-        $response = $this->resolveResponse($data);
-
-        $this->afterAction($strAction, $response);
-
-        return $response;
-    }
-
-    /**
-     * @param string $action Action identifier.
-     *
-     * @return ActionInterface
-     */
-    protected function resolveAction(string $action): ActionInterface
-    {
-        $action = $this->container->get($action);
-
-        if (!$action instanceof ActionInterface) {
-            throw new \LogicException("Action `$action` must extends `" . Action::class . "`.");
-        }
-
-        return $action;
-    }
-
-    /**
-     * @param Request $request
      * @param array $pathParams
      *
      * @return array
      */
-    private function resolveParams(Request $request, array $pathParams): array
+    protected function resolveParams(Request $request, array $pathParams): array
     {
         $params = $request->getContentType() === 'json'
             ? (array) json_decode($request->getContent(), true)
@@ -117,7 +76,7 @@ class Controller implements ControllerInterface
      *
      * @return Response
      */
-    private function resolveResponse($data): Response
+    protected function resolveResponse($data): Response
     {
         if ($data instanceof Response) {
             return $data;

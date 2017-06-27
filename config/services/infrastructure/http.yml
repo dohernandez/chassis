@@ -17,14 +17,15 @@ services:
 
   Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface: '@Chassis\Infrastructure\HTTP\Response\ResponseResolver'
 
+
   Chassis\Infrastructure\HTTP\Subscriber\ActionSubscriber:
     tags: [ 'event_subscriber' ]
 
 
   app.controller:
-    class: Chassis\Infrastructure\HTTP\Controller\Controller
+    class: Chassis\Infrastructure\HTTP\Controller\ActionController
     public: true
 
   app.controller[Chassis\Presentation\HTTP\Controller\IndexAction]:
-    class: Chassis\Infrastructure\HTTP\Controller\Controller
+    class: Chassis\Infrastructure\HTTP\Controller\ActionController
     public: true
