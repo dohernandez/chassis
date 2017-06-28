@@ -19,7 +19,7 @@ services:
 
 
   Chassis\Infrastructure\HTTP\Subscriber\ActionSubscriber:
-    tags: [ 'event_subscriber' ]
+    tags: [ 'app.event_subscriber' ]
 
 
   app.controller:
