@@ -2,6 +2,7 @@
 
 namespace Chassis\Infrastructure;
 
+use Chassis\Application\Middleware\MiddlewareInterface;
 use Chassis\Infrastructure\HTTP\Controller\CommandController;
 use Chassis\Infrastructure\Routing\Route;
 use FastRoute\Dispatcher;
@@ -22,77 +23,102 @@ class Application
     private $routes;
 
     /**
+     * @var MiddlewareInterface[]
+     */
+    private $middleware;
+
+    /**
      * @var ContainerBuilder
      */
     private $container;
 
     /**
-     * @param ContainerBuilder $builder
+     * @param ContainerInterface $container
      */
-    public function __construct(ContainerBuilder $builder)
+    public function __construct(ContainerInterface $container)
     {
         $this->routes = [];
 
-        $this->container = $builder->build();
+        $this->container = $container;
     }
 
     /**
      * Maps a GET request
+     *
      * @param string $pattern
      * @param mixed $to
+     *
+     * @return Route
      */
     public function get(string $pattern, $to)
     {
-        $this->addRoute(new Route('GET', $pattern, $to));
+        return $this->addRoute(new Route('GET', $pattern, $to));
     }
 
     /**
      * Add route to the list
+     *
      * @param Route $route
+     *
+     * @return Route
      */
     public function addRoute(Route $route)
     {
         $this->routes[] = $route;
+
+        return $route;
     }
 
     /**
      * Maps a POST request
+     *
      * @param string $pattern
      * @param mixed $to
+     *
+     * @return Route
      */
     public function post(string $pattern, $to)
     {
-        $this->addRoute(new Route('POST', $pattern, $to));
+        return $this->addRoute(new Route('POST', $pattern, $to));
     }
 
     /**
      * Maps a PUT request
+     *
      * @param string $pattern
      * @param mixed $to
+     *
+     * @return Route
      */
     public function put(string $pattern, $to)
     {
-        $this->addRoute(new Route('PUT', $pattern, $to));
+        return $this->addRoute(new Route('PUT', $pattern, $to));
     }
 
     /**
      * Maps a PATCH request
+     *
      * @param string $pattern
      * @param mixed $to
+     *
+     * @return Route
      */
     public function patch(string $pattern, $to)
     {
-        $this->addRoute(new Route('PATCH', $pattern, $to));
+        return $this->addRoute(new Route('PATCH', $pattern, $to));
     }
 
     /**
      * Maps a DELETE request
+     *
      * @param string $pattern
      * @param mixed $to
+     *
+     * @return Route
      */
     public function delete(string $pattern, $to)
     {
-        $this->addRoute(new Route('DELETE', $pattern, $to));
+        return $this->addRoute(new Route('DELETE', $pattern, $to));
     }
 
     /**
@@ -103,9 +129,11 @@ class Application
     {
         $request = $this->getRequest($request);
 
-        $this->getLooger()->debug(sprintf('Requesting the end point %s', $request->getUri()));
+        // TODO invoke middleware before dispatch request
 
         $response = $this->dispatchRequest($request);
+
+        // TODO invoke middleware after dispatch request
 
         return $response->send();
     }
