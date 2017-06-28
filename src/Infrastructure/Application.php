@@ -2,7 +2,6 @@
 
 namespace Chassis\Infrastructure;
 
-use Chassis\Application\Middleware\MiddlewareInterface;
 use Chassis\Infrastructure\HTTP\Controller\CommandController;
 use Chassis\Infrastructure\Routing\Route;
 use FastRoute\Dispatcher;
@@ -21,11 +20,6 @@ class Application
      * @var Route[]
      */
     private $routes;
-
-    /**
-     * @var MiddlewareInterface[]
-     */
-    private $middleware;
 
     /**
      * @var ContainerBuilder
@@ -129,11 +123,7 @@ class Application
     {
         $request = $this->getRequest($request);
 
-        // TODO invoke middleware before dispatch request
-
         $response = $this->dispatchRequest($request);
-
-        // TODO invoke middleware after dispatch request
 
         return $response->send();
     }

@@ -24,10 +24,8 @@ class ActionSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-
             BeforeActionEvent::NAME => [ 'beforeAction', self::PRIORITY_BEFORE_ACTION ],
             AfterActionEvent::NAME => [ 'afterAction', self::PRIORITY_AFTER_ACTION ],
-
         ];
     }
 

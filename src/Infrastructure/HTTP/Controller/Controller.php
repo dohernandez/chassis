@@ -57,7 +57,7 @@ abstract class Controller implements ControllerInterface
 
         $data = $this->run($request, $action, $params);
 
-        $response = $this->resolveResponse($data);
+        $response = $this->respond($data);
 
         $this->afterAction($action, $response);
 
@@ -105,29 +105,17 @@ abstract class Controller implements ControllerInterface
      *
      * @return Response
      */
-    private function resolveResponse($data): Response
+    private function respond($data): Response
     {
         if ($data instanceof Response) {
             return $data;
         }
 
         if ($data === null) {
-            return $this->respond('', 204);
+            return $this->responseResolver->resolve('', Response::HTTP_NO_CONTENT);
         }
 
-        return $this->respond($data);
-    }
-
-    /**
-     * @param null $data
-     * @param int $status
-     * @param array $headers
-     *
-     * @return Response
-     */
-    protected function respond($data = null, int $status = Response::HTTP_OK, array $headers = []): Response
-    {
-        return $this->responseResolver->resolve($data, $status, $headers);
+        return $this->responseResolver->resolve($data);
     }
 
     /**
