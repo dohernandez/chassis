@@ -12,9 +12,9 @@ class ContainerBuilder
 {
     const DEFAULT_CONTAINER_CLASS = "ApplicationContainer";
     const DEFAULT_YML_SERVICES = "services.yml";
-    const EVENT_DISPATCHER_SERVICE = 'event_dispatcher';
-    const EVENT_LISTENER_TAG = 'event_listener';
-    const EVENT_SUBSCRIBER_TAG = 'event_subscriber';
+    const EVENT_DISPATCHER_SERVICE = 'app.event_dispatcher';
+    const EVENT_LISTENER_TAG = 'app.event_listener';
+    const EVENT_SUBSCRIBER_TAG = 'app.event_subscriber';
 
     /**
      * @var string

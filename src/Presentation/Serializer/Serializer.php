@@ -2,7 +2,7 @@
 
 namespace Chassis\Presentation\Serializer;
 
-use Chassis\Infrastructure\Serializer\SerializerInterface;
+use Chassis\Application\Serializer\SerializerInterface;
 use League\Fractal\Manager;
 use League\Fractal\Serializer\DataArraySerializer;
 use League\Fractal\Serializer\SerializerAbstract;

@@ -1,0 +1,49 @@
+#!/usr/bin/env php
+<?php declare(strict_types = 1);
+
+use Chassis\Infrastructure\ContainerBuilder;
+use Doctrine\DBAL\Migrations\Configuration\Configuration;
+use Doctrine\DBAL\Migrations\OutputWriter;
+use Doctrine\DBAL\Migrations\Tools\Console\Command as MigrationsCommand;
+use Doctrine\DBAL\Migrations\Tools\Console\Helper\ConfigurationHelper;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+$container = (new ContainerBuilder('chassis', __DIR__ . DIRECTORY_SEPARATOR . '..'))->build();
+$connection = $container->get('app.db_connection');
+
+$output = new ConsoleOutput();
+$outputWriter = new OutputWriter(function($message) use ($output) {
+    $output->writeln($message);
+});
+
+$configuration = new Configuration($connection, $outputWriter);
+$configuration->setName(sprintf('%s Migrations', ucfirst($container->getParameter('app_name'))));
+$configuration->setMigrationsDirectory(__DIR__ . '/../src/Infrastructure/Migration');
+$configuration->setMigrationsNamespace('Chassis\Infrastructure\Migration');
+$configuration->setMigrationsTableName('migrations');
+
+$cli = new Application(sprintf('%s Console', ucfirst($container->getParameter('app_name'))));
+$cli->setCatchExceptions(true);
+
+$helperSet = new HelperSet([
+    'db' => new ConnectionHelper($connection),
+    'dialog' => new QuestionHelper(),
+    'configuration' => new ConfigurationHelper($connection, $configuration)
+]);
+$cli->setHelperSet($helperSet);
+
+$cli->addCommands([
+    new MigrationsCommand\ExecuteCommand(),
+    new MigrationsCommand\GenerateCommand(),
+    new MigrationsCommand\MigrateCommand(),
+    new MigrationsCommand\StatusCommand(),
+    new MigrationsCommand\VersionCommand()
+]);
+
+$cli->run();

@@ -9,4 +9,4 @@ services:
 
   Chassis\Presentation\Serializer\Serializer: ~
 
-  Chassis\Infrastructure\Serializer\SerializerInterface: '@Chassis\Presentation\Serializer\Serializer'
+  Chassis\Application\Serializer\SerializerInterface: '@Chassis\Presentation\Serializer\Serializer'

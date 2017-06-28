@@ -5,6 +5,7 @@ imports:
   - { resource: services/infrastructure/http.yml }
   - { resource: services/infrastructure/serialize.yml }
   - { resource: services/infrastructure/command_bus.yml }
+  - { resource: services/infrastructure/persistence.yml }
 
 services:
 
@@ -14,10 +15,10 @@ services:
       tags: [ 'app.container' ]
 
     Symfony\Component\EventDispatcher\EventDispatcherInterface:
-      tags: [ 'event_dispatcher' ]
+      tags: [ 'app.event_dispatcher' ]
 
   app.container:
     synthetic: true
 
-  event_dispatcher:
+  app.event_dispatcher:
     class: Symfony\Component\EventDispatcher\EventDispatcher

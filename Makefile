@@ -11,7 +11,7 @@ dependencies:
 
 autoload.dependency: dependencies
 	@printf "$(OK_COLOR)==> Dump dependencies ...$(NO_COLOR)\n"
-	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 dump-autoload
+	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 dump-autoload --optimize
 
 tail.log:
 	@printf "$(OK_COLOR)==> Tail log file ...$(NO_COLOR)\n"
@@ -25,9 +25,13 @@ standards:
 	@printf "$(OK_COLOR)==> Running static analysis...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app phpstan/phpstan analyse -c /app/phpstan.neon --level=4 /app/src
 
+db.generate:
+	@printf "$(OK_COLOR)==> Generating migration ...$(NO_COLOR)\n"
+	@docker-compose exec chassis bin/console migrations:generate
+
 db.migrate:
 	@printf "$(OK_COLOR)==> Migrating database...$(NO_COLOR)\n"
-	@docker-compose exec chassis bin/console mig:mig -n
+	@docker-compose exec chassis bin/console list
 
 db.reset:
 	@printf "$(OK_COLOR)==> Resetting database...$(NO_COLOR)\n"

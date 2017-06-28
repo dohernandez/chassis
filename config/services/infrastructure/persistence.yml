@@ -1,0 +1,17 @@
+parameters:
+
+  database:
+    driver: '%env(PHP_DATABASE_DRIVER)%'
+    url: '%env(DATABASE_URL)%'
+
+services:
+
+  _instanceof:
+    Doctrine\DBAL\Connection:
+      tags: [ 'app.db_connection' ]
+
+  app.db_connection:
+    class: Doctrine\DBAL\Connection
+    factory: ['Doctrine\DBAL\DriverManager', getConnection]
+    arguments: [ '%database%' ]
+    public: true

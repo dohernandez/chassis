@@ -17,12 +17,12 @@ services:
       LOG_DIR: /var/log/
       LOG_LOGSTASH: "false"
       DATABASE_URL: postgres://chassis:chassis@postgres/chassis?sslmode=disable&client_encoding=UTF8
+      PHP_DATABASE_DRIVER: pdo_pgsql
       AMQP_HOST: rabbitmq
       AMQP_PORT: 5672
       AMQP_VHOST: /
       AMQP_USER: guest
       AMQP_PASSWORD: guest
-      PRINTNODE_APIKEY:
       REDIS_SERVER: redis
     links:
       - postgres
