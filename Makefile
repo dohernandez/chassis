@@ -25,13 +25,17 @@ standards:
 	@printf "$(OK_COLOR)==> Running static analysis...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app phpstan/phpstan analyse -c /app/phpstan.neon --level=4 /app/src
 
+db.list:
+	@printf "$(OK_COLOR)==> Listing migration commands ...$(NO_COLOR)\n"
+	@docker-compose exec chassis bin/console list
+
 db.generate:
 	@printf "$(OK_COLOR)==> Generating migration ...$(NO_COLOR)\n"
 	@docker-compose exec chassis bin/console migrations:generate
 
 db.migrate:
 	@printf "$(OK_COLOR)==> Migrating database...$(NO_COLOR)\n"
-	@docker-compose exec chassis bin/console list
+	@docker-compose exec chassis bin/console migrations:migrate
 
 db.reset:
 	@printf "$(OK_COLOR)==> Resetting database...$(NO_COLOR)\n"
