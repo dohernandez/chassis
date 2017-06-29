@@ -1,0 +1,24 @@
+sudo: false
+language: php
+php:
+  - '7.1'
+  - nightly
+
+  matrix:
+    allow_failures:
+      - php: hhvm-3.18
+
+cache:
+    directories:
+        - $HOME/.composer/cache
+
+before_script:
+    - travis_retry curl -s http://getcomposer.org/installer | php
+    - travis_retry php composer.phar install --no-interaction
+
+# Explicitly use the phpunit from composer, not any system-wide found
+script:
+    - vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
+
+after_success:
+  - php vendor/bin/codacycoverage clover
