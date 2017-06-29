@@ -37,6 +37,14 @@
       "app/helpers.php"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\Chassis\\": "tests/"
+    },
+    "files": [
+      "app/helpers.php"
+    ]
+  },
   "config": {
     "optimize-autoloader": true
   },

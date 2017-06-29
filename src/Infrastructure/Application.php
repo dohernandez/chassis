@@ -2,20 +2,18 @@
 
 namespace Chassis\Infrastructure;
 
+use Chassis\Application\Exception\ExceptionHandler;
 use Chassis\Infrastructure\HTTP\Controller\CommandController;
 use Chassis\Infrastructure\Routing\Route;
-use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
+use Chassis\Infrastructure\Routing\RouteResolverInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
+use Throwable;
 
 class Application
 {
-    const CONTROLLER_METHOD_SEPARATOR = '#';
-
     /**
      * @var Route[]
      */
@@ -121,9 +119,12 @@ class Application
      */
     public function run(Request $request = null): Response
     {
-        $request = $this->getRequest($request);
-
-        $response = $this->dispatchRequest($request);
+        try {
+            $request = $this->getRequest($request);
+            $response = $this->handleRequest($request);
+        } catch (Throwable $throwable) {
+            $response = $this->handleException($throwable);
+        }
 
         return $response->send();
     }
@@ -161,84 +162,46 @@ class Application
      * @param Request $request
      * @return Response
      */
-    protected function dispatchRequest(Request $request): Response
+    protected function handleRequest(Request $request): Response
     {
-        $dispatcher = $this->getDispatcher();
+        $routeResolver = $this->getRouteResolver();
 
-        return $this->handle($dispatcher, $request);
+        return $this->process($routeResolver, $request);
     }
 
     /**
-     * @return Dispatcher
+     * @return RouteResolverInterface
      */
-    protected function getDispatcher(): Dispatcher
+    protected function getRouteResolver(): RouteResolverInterface
     {
-        $routes = $this->routes;
+        if ($this->getContainer()->has('app.route_resolver')) {
+             return $this->getContainer()->get('app.route_resolver');
+        }
 
-        $dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $r) use ($routes) {
-            foreach ($routes as $route) {
-                $r->addRoute($route->getMethod(), $route->getRoutePattern(), $route->getHandle());
-            }
-        });
-
-        return $dispatcher;
+        throw new \LogicException('Route resolver is not defined.');
     }
 
     /**
-     * @param Dispatcher $dispatcher
+     * @param RouteResolverInterface $RouteResolver
      * @param Request $request
      * @return Response
      */
-    protected function handle(Dispatcher $dispatcher, Request $request): Response
+    protected function process(RouteResolverInterface $RouteResolver, Request $request): Response
     {
-        $uri = rawurldecode($request->getPathInfo());
-        $method = $request->getMethod();
-
-        $routeInfo = $dispatcher->dispatch($method, $uri);
-
-        if ($routeInfo[0] == Dispatcher::METHOD_NOT_ALLOWED) {
-            return new Response('', Response::HTTP_METHOD_NOT_ALLOWED);
-        }
-
-        if ($routeInfo[0] == Dispatcher::FOUND) {
-            return $this->runAction($request, $routeInfo);
-        }
-
-        return new Response('', Response::HTTP_NOT_FOUND);
-    }
-
-    /**
-     * @param Request $request
-     * @param array $routeInfo
-     *
-     * @return Response
-     */
-    protected function runAction(Request $request, array $routeInfo)
-    {
-        list($controller, $method) = $this->getController($routeInfo[1]);
+        list($controller, $action, $params) = $RouteResolver->resolve(rawurldecode($request->getPathInfo()), $request->getMethod());
 
         if ($controller instanceof CommandController) {
-            return $controller->__invoke($request, $method, $routeInfo[2]);
+            return $controller->__invoke($request, $action, $params);
         }
 
-        return $controller->__invoke($request, $routeInfo[1], $routeInfo[2]);
+        return $controller->__invoke($request, $action, $params);
     }
 
-    /**
-     * @param string $action
-     *
-     * @return array
-     */
-    protected function getController(string $action = null): array
+    protected function handleException(Throwable $throwable)
     {
-        list($controller, $method) = explode(self::CONTROLLER_METHOD_SEPARATOR, $action) + [ 1 => 'index' ];
+        /* @var ExceptionHandler $handler */
+        $handler = $this->container->get('app.http_exception_handler');
 
-        $containerId = sprintf('app.controller[%s]', $controller);
-
-        if ($this->getContainer()->has($containerId)) {
-            return [ $this->getContainer()->get($containerId), $method ];
-        }
-
-        return [ $this->getContainer()->get('app.controller'), $method ];
+        return $handler->__invoke($throwable);
     }
 }
