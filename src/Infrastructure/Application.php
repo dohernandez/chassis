@@ -38,13 +38,13 @@ class Application
      * Maps a GET request
      *
      * @param string $pattern
-     * @param mixed $to
+     * @param mixed $action
      *
      * @return Route
      */
-    public function get(string $pattern, $to)
+    public function get(string $pattern, $action)
     {
-        return $this->addRoute(new Route('GET', $pattern, $to));
+        return $this->addRoute(new Route('GET', $pattern, $action));
     }
 
     /**
@@ -65,52 +65,52 @@ class Application
      * Maps a POST request
      *
      * @param string $pattern
-     * @param mixed $to
+     * @param mixed $action
      *
      * @return Route
      */
-    public function post(string $pattern, $to)
+    public function post(string $pattern, $action)
     {
-        return $this->addRoute(new Route('POST', $pattern, $to));
+        return $this->addRoute(new Route('POST', $pattern, $action));
     }
 
     /**
      * Maps a PUT request
      *
      * @param string $pattern
-     * @param mixed $to
+     * @param mixed $action
      *
      * @return Route
      */
-    public function put(string $pattern, $to)
+    public function put(string $pattern, $action)
     {
-        return $this->addRoute(new Route('PUT', $pattern, $to));
+        return $this->addRoute(new Route('PUT', $pattern, $action));
     }
 
     /**
      * Maps a PATCH request
      *
      * @param string $pattern
-     * @param mixed $to
+     * @param mixed $action
      *
      * @return Route
      */
-    public function patch(string $pattern, $to)
+    public function patch(string $pattern, $action)
     {
-        return $this->addRoute(new Route('PATCH', $pattern, $to));
+        return $this->addRoute(new Route('PATCH', $pattern, $action));
     }
 
     /**
      * Maps a DELETE request
      *
      * @param string $pattern
-     * @param mixed $to
+     * @param mixed $action
      *
      * @return Route
      */
-    public function delete(string $pattern, $to)
+    public function delete(string $pattern, $action)
     {
-        return $this->addRoute(new Route('DELETE', $pattern, $to));
+        return $this->addRoute(new Route('DELETE', $pattern, $action));
     }
 
     /**
