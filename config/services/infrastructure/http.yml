@@ -12,6 +12,10 @@ services:
     Chassis\Infrastructure\HTTP\Controller\ControllerInterface:
       tags: [ 'app.controller' ]
 
+    # Add the app.http_exception_handler tag to all services defined in this file having this type
+    Chassis\Application\Exception\ExceptionHandler:
+      tags: [ 'app.http_exception_handler' ]
+
 
   Chassis\Infrastructure\HTTP\Response\ResponseResolver: ~
 
@@ -28,4 +32,8 @@ services:
 
   app.controller[Chassis\Presentation\HTTP\Controller\IndexAction]:
     class: Chassis\Presentation\HTTP\Controller\IndexController
+    public: true
+
+  app.http_exception_handler:
+    class: Chassis\Infrastructure\HTTP\HTTPExceptionHandler
     public: true

@@ -1,0 +1,9 @@
+services:
+
+  _instanceof:
+    # Add the app.route_resolver tag to all services defined in this file having this type
+    Chassis\Infrastructure\Routing\RouteResolverInterface:
+      tags: [ 'app.route_resolver' ]
+
+  app.route_resolver:
+    class: Chassis\Infrastructure\Routing\RouteResolver

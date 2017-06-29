@@ -7,6 +7,10 @@ services:
     # if you don't need to do this, you can override this setting on individual services
     public: true
 
+  _instanceof:
+    Psr\Log\LoggerInterface:
+      tags: [ 'app.logger' ]
+
   Chassis\Infrastructure\Logger\LoggerBuilder: ~
 
   # call a method on the specified factory service
