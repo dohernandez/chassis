@@ -11,15 +11,15 @@ PACKAGE_VERSION = 1.0
 all: usage
 
 usage:
-	@echo "dependencies:  Install application dependencies.\n"
-	@echo "dependencies.autoload:  Autoload application dependencies.\n"
-	@echo "standards:  Run code standards checks.\n"
-	@echo "test:  Run application test.\n"
-	@echo "tail.log:  Tail the application log.\n"
-	@echo "db.list:  List the doctrine commands.\n"
-	@echo "db.generate:  Generate a doctrine migration.\n"
-	@echo "db.migrate:  Run a doctrine migration.\n"
-	@echo "db.reset:  Reset the database.\n"
+	@echo "dependencies:  Install application dependencies."
+	@echo "dependencies.autoload:  Autoload application dependencies."
+	@echo "standards:  Run code standards checks."
+	@echo "test:  Run application test."
+	@echo "tail.log:  Tail the application log."
+	@echo "db.list:  List the doctrine commands."
+	@echo "db.generate:  Generate a doctrine migration."
+	@echo "db.migrate:  Run a doctrine migration."
+	@echo "db.reset:  Reset the database."
 
 dependencies:
 	@printf "$(OK_COLOR)==> Installing dependencies...$(NO_COLOR)\n"
@@ -57,7 +57,7 @@ db.reset:
 	@printf "$(OK_COLOR)==> Resetting database...$(NO_COLOR)\n"
 	@docker-compose exec chassis bin/console mig:mig first -n && bin/console mig:mig -n
 
-test:
+test: dependencies.autoload
 	@printf "$(OK_COLOR)==> Running unit tests...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app --network=chassis_default averor/docker-phpunit-php-7.1 vendor/bin/phpunit --coverage-text=build/coverage.txt
 	@cat $(PWD)/build/coverage.txt
