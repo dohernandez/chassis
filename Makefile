@@ -1,13 +1,33 @@
-.PHONY: all dependencies standards
 NO_COLOR=\033[0m
 OK_COLOR=\033[32;01m
 WARN_COLOR=\033[33;01m
 
-all: dependencies
+PACKAGE_NAME = chassis/chassis
+PACKAGE_VERSION = 1.0
+
+# do not edit the following lines
+# for shell usage
+
+all: usage
+
+usage:
+	@echo "dependencies:  Install application dependencies.\n"
+	@echo "dependencies.autoload:  Autoload application dependencies.\n"
+	@echo "standards:  Run code standards checks.\n"
+	@echo "test:  Run application test.\n"
+	@echo "tail.log:  Tail the application log.\n"
+	@echo "db.list:  List the doctrine commands.\n"
+	@echo "db.generate:  Generate a doctrine migration.\n"
+	@echo "db.migrate:  Run a doctrine migration.\n"
+	@echo "db.reset:  Reset the database.\n"
 
 dependencies:
 	@printf "$(OK_COLOR)==> Installing dependencies...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 update --prefer-dist --no-interaction --optimize-autoloader --no-progress
+
+dependencies.autoload:
+	@printf "$(OK_COLOR)==> Auto-loading dependencies...$(NO_COLOR)\n"
+	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 dump-autoload
 
 standards:
 	@printf "$(OK_COLOR)==> Checking code standards...$(NO_COLOR)\n"
@@ -16,6 +36,10 @@ standards:
 	@docker run -it --rm -v $(PWD):/workspace shavenking/docker-phpmd src text ruleset.xml --suffixes php --exclude src/Infrastructure/Migrations
 	@printf "$(OK_COLOR)==> Running static analysis...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app phpstan/phpstan analyse -c /app/phpstan.neon --level=4 /app/src
+
+tail.log:
+	@printf "$(OK_COLOR)==> Tail log file ...$(NO_COLOR)\n"
+	@docker-compose exec chassis tail /var/log/chassis/app.log
 
 db.list:
 	@printf "$(OK_COLOR)==> Listing migration commands ...$(NO_COLOR)\n"
@@ -35,21 +59,10 @@ db.reset:
 
 test:
 	@printf "$(OK_COLOR)==> Running unit tests...$(NO_COLOR)\n"
-	@docker run -it --rm -v $(PWD):/app -w /app \
-	--network=chassis_default averor/docker-phpunit-php-7.1 \
-	vendor/bin/phpunit --coverage-xml=build/coverage
-	@docker run -it --rm -v $(PWD):/app -w /app \
-    -e CODACY_PROJECT_TOKEN=$(CODACY_PROJECT_TOKEN) \
-    --network=chassis_default averor/docker-phpunit-php-7.1 \
-    vendor/bin/codacycoverage phpunit build/coverage
-	#@cat $(PWD)/tests/coverage.txt
+	@docker run -it --rm -v $(PWD):/app -w /app --network=chassis_default averor/docker-phpunit-php-7.1 vendor/bin/phpunit --coverage-text=build/coverage.txt
+	@cat $(PWD)/build/coverage.txt
+	@printf "\n"
 	#@printf "$(OK_COLOR)==> Running integration tests...$(NO_COLOR)\n"
 	#@docker-compose exec chassis vendor/bin/behat
 
-autoload.dependency:
-	@printf "$(OK_COLOR)==> Dump dependencies ...$(NO_COLOR)\n"
-	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 dump-autoload --optimize
-
-tail.log:
-	@printf "$(OK_COLOR)==> Tail log file ...$(NO_COLOR)\n"
-	@docker-compose exec chassis tail /var/log/chassis/app.log
+.PHONY: all dependencies standards test
