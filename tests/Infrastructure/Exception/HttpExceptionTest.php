@@ -18,7 +18,9 @@ class HttpExceptionTest extends TestCase
 
         $message = $faker->realText();
         $header = $faker->randomElements();
-        $exception = new HttpException(Response::HTTP_NOT_FOUND, $message, null, $header);
+
+        $exception = new HttpException(Response::HTTP_NOT_FOUND, $message, null);
+        $exception->setHeaders($header);
 
         $this->assertSame($message, $exception->getMessage());
         $this->assertSame($header, $exception->getHeaders());
