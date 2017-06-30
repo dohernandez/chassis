@@ -3,8 +3,8 @@
 namespace Infrastructure\Exception;
 
 use Chassis\Infrastructure\Exception\HttpException;
-use PHPUnit\Framework\TestCase;
 use Faker\Factory;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\Chassis\MockHelpers;
 
