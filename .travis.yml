@@ -8,6 +8,10 @@ matrix:
   allow_failures:
     - php: hhvm-3.18
 
+env:
+  - APP_DEBUG="false"
+  - APP_NAME="chassis-test"
+
 cache:
     directories:
         - $HOME/.composer/cache

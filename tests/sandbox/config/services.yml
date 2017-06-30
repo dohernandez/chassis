@@ -1,0 +1,12 @@
+imports:
+  - { resource: parameters.yml }
+
+services:
+
+  _instanceof:
+    # Add the app.container tag to all services defined in this file having this type
+    Symfony\Component\DependencyInjection\ContainerInterface:
+      tags: [ 'app.container' ]
+
+  app.container:
+    synthetic: true

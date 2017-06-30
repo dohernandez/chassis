@@ -4,6 +4,7 @@ namespace Chassis\Infrastructure;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 
@@ -75,7 +76,7 @@ class ContainerBuilder
         $this->containerClass = $containerClass;
         $this->ymlServices = $ymlServices;
         $this->ymlServicesPath = sprintf('%s/%s', $this->configPath, $this->ymlServices);
-        $this->containerClassPath = sprintf('%s/%s.php', $this->configPath, $this->containerClass);
+        $this->containerClassPath = sprintf('%s/%s.php', $this->cachePath, $this->containerClass);
     }
 
     /**
@@ -84,7 +85,13 @@ class ContainerBuilder
     public function build(): SymfonyContainerBuilder
     {
         if (!file_exists($this->containerClassPath)) {
-            return $this->loadServicesFromYMLFile();
+            $container = $this->loadServicesFromYMLFile();
+
+            if ($container->getParameter('app_debug') == "false") {
+                $this->dumpContainer($container, $this->containerClassPath, $this->containerClass);
+            }
+
+            return $container;
         }
 
         return $this->loadServicesFromContainerClass();
@@ -115,6 +122,25 @@ class ContainerBuilder
         $container->set('app.container', $container);
 
         return $container;
+    }
+
+    /**
+     * @param SymfonyContainerBuilder $container
+     * @param string $containerFile
+     * @param string $containerClass
+     */
+    private function dumpContainer(SymfonyContainerBuilder $container, string $containerFile, string $containerClass)
+    {
+        $dir = dirname($containerFile);
+
+        if (!file_exists($dir)) {
+            throw new \LogicException("Directory does not exists: $dir."); // @codeCoverageIgnore
+        }
+
+        file_put_contents(
+            $containerFile,
+            (new PhpDumper($container))->dump([ 'class' => $containerClass ])
+        );
     }
 
     /**

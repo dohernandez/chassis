@@ -57,9 +57,11 @@ db.reset:
 	@printf "$(OK_COLOR)==> Resetting database...$(NO_COLOR)\n"
 	@docker-compose exec chassis bin/console mig:mig first -n && bin/console mig:mig -n
 
-test: dependencies.autoload
+test:
 	@printf "$(OK_COLOR)==> Running unit tests...$(NO_COLOR)\n"
-	@docker run -it --rm -v $(PWD):/app -w /app --network=chassis_default averor/docker-phpunit-php-7.1 vendor/bin/phpunit --coverage-text=build/coverage.txt
+	@docker run -it --rm -v $(PWD):/app -w /app --network=chassis_default \
+	-e APP_NAME='chassis-test' -e APP_DEBUG='false' \
+	averor/docker-phpunit-php-7.1 vendor/bin/phpunit --coverage-text=build/coverage.txt
 	@cat $(PWD)/build/coverage.txt
 	@printf "\n"
 	#@printf "$(OK_COLOR)==> Running integration tests...$(NO_COLOR)\n"
