@@ -4,13 +4,12 @@ namespace Chassis\Infrastructure\Routing;
 
 use Chassis\Infrastructure\Exception\MethodNotAllowedHttpException;
 use Chassis\Infrastructure\Exception\NotFoundHttpException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RouteResolver implements RouteResolverInterface
 {
-
     const CONTROLLER_METHOD_SEPARATOR = '#';
 
     /**
@@ -76,7 +75,6 @@ class RouteResolver implements RouteResolverInterface
     {
         return $this->container;
     }
-
 
     /**
      * @param string $action

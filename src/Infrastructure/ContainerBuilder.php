@@ -8,11 +8,10 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 
-
 class ContainerBuilder
 {
-    const DEFAULT_CONTAINER_CLASS = "ApplicationContainer";
-    const DEFAULT_YML_SERVICES = "services.yml";
+    const DEFAULT_CONTAINER_CLASS = 'ApplicationContainer';
+    const DEFAULT_YML_SERVICES = 'services.yml';
     const EVENT_DISPATCHER_SERVICE = 'app.event_dispatcher';
     const EVENT_LISTENER_TAG = 'app.event_listener';
     const EVENT_SUBSCRIBER_TAG = 'app.event_subscriber';
@@ -87,7 +86,7 @@ class ContainerBuilder
         if (!file_exists($this->containerClassPath)) {
             $container = $this->loadServicesFromYMLFile();
 
-            if ($container->getParameter('app_debug') == "false") {
+            if ($container->getParameter('app_debug') == 'false') {
                 $this->dumpContainer($container, $this->containerClassPath, $this->containerClass);
             }
 
@@ -150,7 +149,7 @@ class ContainerBuilder
     {
         require_once $this->containerClassPath;
 
-        $container = new $this->containerClass;
+        $container = new $this->containerClass();
         $container->set('app.container', $container);
 
         return $container;

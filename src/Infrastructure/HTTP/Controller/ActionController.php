@@ -32,7 +32,7 @@ class ActionController extends Controller
         $action = $this->getContainer()->get($action);
 
         if (!$action instanceof ActionInterface) {
-            throw new \LogicException("Action `$action` must extends `" . Action::class . "`.");
+            throw new \LogicException("Action `$action` must extends `" . Action::class . '`.');
         }
 
         return $action;

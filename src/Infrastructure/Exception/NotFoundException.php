@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Chassis\Infrastructure\Exception;
 
 class NotFoundException extends \LogicException
 {
-    const DEFAULT_MESSAGE = "Resource not found.";
+    const DEFAULT_MESSAGE = 'Resource not found.';
 
     /**
      * @param string $message

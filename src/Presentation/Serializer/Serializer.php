@@ -3,10 +3,6 @@
 namespace Chassis\Presentation\Serializer;
 
 use Chassis\Application\Serializer\SerializerInterface;
-use League\Fractal\Manager;
-use League\Fractal\Serializer\DataArraySerializer;
-use League\Fractal\Serializer\SerializerAbstract;
-use League\Fractal\TransformerAbstract;
 
 class Serializer implements SerializerInterface
 {

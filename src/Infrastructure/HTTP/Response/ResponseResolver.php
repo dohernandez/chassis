@@ -20,6 +20,7 @@ class ResponseResolver implements ResponseResolverInterface
     {
         $this->serializer = $serializer;
     }
+
     /**
      * @param mixed $data
      * @param int $status

@@ -9,7 +9,7 @@ class ContainerBuilderTest extends TestCase
 {
     const CONTAINER_CLASS = 'TestApplicationContainer';
     const APP_NAME = 'Chassis Test';
-    const YML_SERVICES = "services.yml";
+    const YML_SERVICES = 'services.yml';
 
     public static function setupBeforeClass()
     {

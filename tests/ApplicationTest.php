@@ -126,8 +126,7 @@ class ApplicationTest extends TestCase
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
-        $controller = new class($response) implements ControllerInterface
-        {
+        $controller = new class($response) implements ControllerInterface {
             private $response;
 
             public function __construct(Response $response)
@@ -145,7 +144,7 @@ class ApplicationTest extends TestCase
             $dispatcher->resolve('/', 'GET')->shouldBeCalled()->willReturn([
                 $controller,
                 'index',
-                []
+                [],
             ]);
         });
 
@@ -180,8 +179,7 @@ class ApplicationTest extends TestCase
             )->shouldBeCalled()->willReturn($response);
         });
 
-        $exceptionHandler = new class($logger, $responseResolver) extends HTTPExceptionHandler
-        {
+        $exceptionHandler = new class($logger, $responseResolver) extends HTTPExceptionHandler {
             protected $errorId = 'd7f1f4b8-5cd9-11e7-907b-a6006ad3dba0';
         };
 

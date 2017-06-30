@@ -2,9 +2,9 @@
 
 namespace Chassis\Infrastructure\Persistence;
 
-use Chassis\Infrastructure\Exception\NotFoundException;
 use Chassis\Domain\Entity;
 use Chassis\Domain\EntityRepositoryInterface;
+use Chassis\Infrastructure\Exception\NotFoundException;
 use Doctrine\DBAL\Connection;
 
 class EntityDBALRepository implements EntityRepositoryInterface
@@ -35,9 +35,8 @@ class EntityDBALRepository implements EntityRepositoryInterface
     /**
      * @param mixed $id
      *
-     * @return Entity
-     *
      * @throws NotFoundException if the entity cannot be found.
+     * @return Entity
      */
     public function find($id): Entity
     {
@@ -73,8 +72,6 @@ class EntityDBALRepository implements EntityRepositoryInterface
      * Delete an existing entity.
      *
      * @param Entity|string|int $idOrEntity
-     *
-     * @return void
      *
      * @throws NotFoundException if the specified id doesn't match any entity.
      * @throws \Exception if the entity cannot be deleted.

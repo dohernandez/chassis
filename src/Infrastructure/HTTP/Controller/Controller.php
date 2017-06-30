@@ -5,10 +5,10 @@ namespace Chassis\Infrastructure\HTTP\Controller;
 use Chassis\Infrastructure\HTTP\Event\AfterActionEvent;
 use Chassis\Infrastructure\HTTP\Event\BeforeActionEvent;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class Controller implements ControllerInterface
 {

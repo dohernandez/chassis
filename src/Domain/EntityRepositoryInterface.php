@@ -19,9 +19,8 @@ interface EntityRepositoryInterface
     /**
      * @param mixed $id
      *
-     * @return Entity
-     *
      * @throws NotFoundException if the entity cannot be found.
+     * @return Entity
      */
     public function find($id): Entity;
 
@@ -48,8 +47,6 @@ interface EntityRepositoryInterface
      * Delete an existing entity.
      *
      * @param Entity|string|int $idOrEntity
-     *
-     * @return void
      *
      * @throws NotFoundException if the specified id doesn't match any entity.
      * @throws \Exception if the entity cannot be deleted.

@@ -7,9 +7,9 @@ use Chassis\Infrastructure\HTTP\Controller\CommandController;
 use Chassis\Infrastructure\Routing\Route;
 use Chassis\Infrastructure\Routing\RouteResolverInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Throwable;
 
 class Application
@@ -175,7 +175,7 @@ class Application
     protected function getRouteResolver(): RouteResolverInterface
     {
         if ($this->getContainer()->has('app.route_resolver')) {
-             return $this->getContainer()->get('app.route_resolver');
+            return $this->getContainer()->get('app.route_resolver');
         }
 
         throw new \LogicException('Route resolver is not defined.');

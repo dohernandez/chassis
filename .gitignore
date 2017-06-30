@@ -1,1 +1,4 @@
 vendor/
+.php_cs.cache
+tests/coverage.txt
+build/
