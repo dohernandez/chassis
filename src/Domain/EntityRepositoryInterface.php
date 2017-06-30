@@ -2,7 +2,7 @@
 
 namespace Chassis\Domain;
 
-use Chassis\Application\Exception\NotFoundException;
+use Chassis\Infrastructure\Exception\NotFoundException;
 
 interface EntityRepositoryInterface
 {

@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Application\Exception;
+namespace Chassis\Infrastructure\Exception;
 
 class HttpException extends \RuntimeException implements HttpExceptionInterface
 {

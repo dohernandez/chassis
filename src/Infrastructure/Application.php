@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure;
 
-use Chassis\Application\Exception\ExceptionHandler;
+use Chassis\Infrastructure\Exception\ExceptionHandler;
 use Chassis\Infrastructure\HTTP\Controller\CommandController;
 use Chassis\Infrastructure\Routing\Route;
 use Chassis\Infrastructure\Routing\RouteResolverInterface;

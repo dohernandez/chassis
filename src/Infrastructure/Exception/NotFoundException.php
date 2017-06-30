@@ -1,6 +1,6 @@
 <?php
 
-namespace Chassis\Application\Exception;
+namespace Chassis\Infrastructure\Exception;
 
 class NotFoundException extends \LogicException
 {

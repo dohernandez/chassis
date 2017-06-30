@@ -2,8 +2,8 @@
 
 namespace Chassis\Infrastructure\Routing;
 
-use Chassis\Application\Exception\MethodNotAllowedHttpException;
-use Chassis\Application\Exception\NotFoundHttpException;
+use Chassis\Infrastructure\Exception\MethodNotAllowedHttpException;
+use Chassis\Infrastructure\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;

@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure\Persistence;
 
-use Chassis\Application\Exception\NotFoundException;
+use Chassis\Infrastructure\Exception\NotFoundException;
 use Chassis\Domain\Entity;
 use Chassis\Domain\EntityRepositoryInterface;
 use Doctrine\DBAL\Connection;

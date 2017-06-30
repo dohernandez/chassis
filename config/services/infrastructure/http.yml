@@ -13,7 +13,7 @@ services:
       tags: [ 'app.controller' ]
 
     # Add the app.http_exception_handler tag to all services defined in this file having this type
-    Chassis\Application\Exception\ExceptionHandler:
+    Chassis\Infrastructure\Exception\ExceptionHandler:
       tags: [ 'app.http_exception_handler' ]
 
 

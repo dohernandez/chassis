@@ -2,10 +2,10 @@
 
 namespace Chassis\Infrastructure\HTTP;
 
-use Chassis\Application\Exception\ExceptionHandler;
-use Chassis\Application\Exception\HttpExceptionInterface;
-use Chassis\Application\Exception\NotFoundException;
-use Chassis\Application\Exception\NotFoundHttpException;
+use Chassis\Infrastructure\Exception\ExceptionHandler;
+use Chassis\Infrastructure\Exception\HttpExceptionInterface;
+use Chassis\Infrastructure\Exception\NotFoundException;
+use Chassis\Infrastructure\Exception\NotFoundHttpException;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
