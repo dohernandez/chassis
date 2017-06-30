@@ -2,6 +2,8 @@
 
 namespace Chassis\Infrastructure\Exception;
 
+use Symfony\Component\HttpFoundation\Response;
+
 class MethodNotAllowedHttpException extends HttpException
 {
     /**
@@ -16,6 +18,6 @@ class MethodNotAllowedHttpException extends HttpException
     {
         $headers = ['Allow' => strtoupper(implode(', ', $allow))];
 
-        parent::__construct(405, $message, $previous, $headers, $code);
+        parent::__construct(Response::HTTP_METHOD_NOT_ALLOWED, $message, $previous, $headers, $code);
     }
 }
