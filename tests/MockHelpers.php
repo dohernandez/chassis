@@ -4,6 +4,8 @@ namespace Tests\Chassis;
 
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 trait MockHelpers
 {
@@ -40,4 +42,24 @@ trait MockHelpers
      * @inheritdoc
      */
     abstract public function prophesize($classOrInterface = null);
+
+    /**
+     * @param callable $init
+     *
+     * @return Request
+     */
+    protected function mockRequest(callable $init = null): Request
+    {
+        return $this->mock(Request::class, $init);
+    }
+
+    /**
+     * @param callable $init
+     *
+     * @return Response
+     */
+    protected function mockResponse(callable $init = null): Response
+    {
+        return $this->mock(Response::class, $init);
+    }
 }

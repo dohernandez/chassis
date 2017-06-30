@@ -117,12 +117,12 @@ class ApplicationTest extends TestCase
 
     public function testRunShouldReturnResponse()
     {
-        $request = $this->mock(Request::class, function ($request) {
+        $request = $this->mockRequest(function ($request) {
             $request->getPathInfo()->shouldBeCalled()->willReturn('/');
             $request->getMethod()->shouldBeCalled()->willReturn('GET');
         });
 
-        $response = $this->mock(Response::class, function ($response) {
+        $response = $this->mockResponse(function ($response) {
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
@@ -158,7 +158,7 @@ class ApplicationTest extends TestCase
 
     public function testRunShouldReturnExceptionResponseDueNotRouteResolverNotFound()
     {
-        $request = $this->mock(Request::class);
+        $request = $this->mockRequest();
 
         $logger = $this->mock(Logger::class, function ($logger) {
             $logger->log(
@@ -168,7 +168,7 @@ class ApplicationTest extends TestCase
             );
         });
 
-        $response = $this->mock(Response::class, function ($response) {
+        $response = $this->mockResponse(function ($response) {
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
