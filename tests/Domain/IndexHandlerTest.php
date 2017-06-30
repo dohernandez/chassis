@@ -1,9 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis\Domain;
+namespace Chassis\Domain;
 
 use Chassis\Application\Command\IndexCommand;
-use Chassis\Domain\IndexHandler;
 use PHPUnit\Framework\TestCase;
 use Tests\Chassis\MockHelpers;
 
@@ -13,10 +12,14 @@ class IndexHandlerTest extends TestCase
 
     public function testHandle()
     {
-        $command = $this->mock(IndexCommand::class);
+        $httpText = 'Test index chassis';
+
+        $command = $this->mock(IndexCommand::class, function ($command) use ($httpText) {
+            $command->getHttpText()->shouldBeCalled()->willReturn($httpText);
+        });
 
         $handle = new IndexHandler();
 
-        $this->assertSame('Welcome to index chassis', $handle->handle($command));
+        $this->assertSame($httpText, $handle->handle($command));
     }
 }

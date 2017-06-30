@@ -8,6 +8,6 @@ class IndexHandler
 {
     public function handle(IndexCommand $command)
     {
-        return 'Welcome to index chassis';
+        return $command->getHttpText();
     }
 }
