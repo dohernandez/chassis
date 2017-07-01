@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\Chassis\MockHelpers;
 
-class NotFoundHttpExceptionTes extends TestCase
+class NotFoundHttpExceptionTest extends TestCase
 {
     use MockHelpers;
 
