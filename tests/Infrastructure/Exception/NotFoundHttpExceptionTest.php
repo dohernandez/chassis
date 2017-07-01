@@ -3,13 +3,13 @@
 namespace Infrastructure\Exception;
 
 use Chassis\Infrastructure\Exception\HttpException;
+use Chassis\Infrastructure\Exception\NotFoundHttpException;
 use Faker\Factory;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\Chassis\MockHelpers;
 
-class HttpExceptionTest extends TestCase
+class NotFoundHttpExceptionTes extends TestCase
 {
     use MockHelpers;
 
@@ -18,14 +18,11 @@ class HttpExceptionTest extends TestCase
         $faker = Factory::create();
 
         $message = $faker->realText();
-        $header = $faker->randomElements();
 
-        $exception = new HttpException(Response::HTTP_NOT_FOUND, $message, null);
-        $exception->setHeaders($header);
+        $exception = new NotFoundHttpException($message);
 
-        $this->assertInstanceOf(RuntimeException::class, $exception);
+        $this->assertInstanceOf(HttpException::class, $exception);
         $this->assertSame($message, $exception->getMessage());
-        $this->assertSame($header, $exception->getHeaders());
         $this->assertSame(Response::HTTP_NOT_FOUND, $exception->getStatusCode());
     }
 }
