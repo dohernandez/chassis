@@ -37,7 +37,7 @@ class RouteResolver implements RouteResolverInterface
 
         $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 
-        if ($routeInfo[0] == Dispatcher::METHOD_NOT_ALLOWED) {
+        if ($routeInfo[0] == Dispatcher::NOT_FOUND) {
             throw new NotFoundHttpException();
         }
 
@@ -45,7 +45,7 @@ class RouteResolver implements RouteResolverInterface
             throw new MethodNotAllowedHttpException($routeInfo[1]);
         }
 
-        list($controller, $method) = $this->getController();
+        list($controller, $method) = $this->getController($routeInfo[1]);
 
         return [ $controller, $method, $routeInfo[2] ];
     }

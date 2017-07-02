@@ -2,7 +2,6 @@
 
 namespace Tests\Chassis;
 
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,7 +34,7 @@ trait MockHelpers
      */
     protected function mockContainer(callable $init = null): ContainerInterface
     {
-        return $this->mock(Container::class, $init);
+        return $this->mock(ContainerInterface::class, $init);
     }
 
     /**

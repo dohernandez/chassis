@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Infrastructure\Exception;
+namespace Tests\Chassis\Infrastructure\Exception;
 
 use Chassis\Infrastructure\Exception\HttpException;
 use Chassis\Infrastructure\Exception\MethodNotAllowedHttpException;

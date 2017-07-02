@@ -51,9 +51,9 @@ abstract class Controller implements ControllerInterface
      */
     final public function __invoke(Request $request, string $action, array $pathParams): Response
     {
-        $params = $this->resolveParams($request, $pathParams);
-
         $this->beforeAction($action, $request);
+
+        $params = $this->resolveParams($request, $pathParams);
 
         $data = $this->run($request, $action, $params);
 

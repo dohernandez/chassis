@@ -33,7 +33,7 @@ class ApplicationTest extends TestCase
      *
      * @return Application
      */
-    protected function createApplication($container = null): Application
+    private function createApplication($container = null): Application
     {
         if (is_null($container)) {
             $container = $this->mockContainer();

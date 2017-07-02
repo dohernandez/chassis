@@ -1,8 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace Chassis\Domain;
+namespace Tests\Chassis\Domain;
 
 use Chassis\Application\Command\IndexCommand;
+use Chassis\Domain\IndexHandler;
 use PHPUnit\Framework\TestCase;
 use Tests\Chassis\MockHelpers;
 

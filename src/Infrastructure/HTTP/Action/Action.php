@@ -6,6 +6,6 @@ abstract class Action implements ActionInterface
 {
     public function __toString()
     {
-        return self::class;
+        return static::class;
     }
 }
