@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure\HTTP\Response;
 
-use Chassis\Infrastructure\Serializer\SerializerInterface;
+use Chassis\Application\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
