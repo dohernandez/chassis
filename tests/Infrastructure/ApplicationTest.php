@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis;
+namespace Tests\Chassis\Infrastructure;
 
 use Chassis\Infrastructure\Application;
 use Chassis\Infrastructure\HTTP\HTTPExceptionHandler;
@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\Chassis\MockHelpers;
 
 class ApplicationTest extends TestCase
 {

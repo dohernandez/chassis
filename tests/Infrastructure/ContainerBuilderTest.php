@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis;
+namespace Tests\Chassis\Infrastructure;
 
 use Chassis\Infrastructure\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
@@ -23,12 +23,12 @@ class ContainerBuilderTest extends TestCase
 
     private static function formatContainerFilename(string $containerClass): string
     {
-        return __DIR__ . "/sandbox/app/storage/cache/$containerClass.php";
+        return __DIR__ . "/../sandbox/app/storage/cache/$containerClass.php";
     }
 
     public function testBuildContainerFromYML()
     {
-        $base_dir = __DIR__ . '/sandbox';
+        $base_dir = __DIR__ . '/../sandbox';
         $containerClass = self::CONTAINER_CLASS;
         $containerFilename = self::formatContainerFilename($containerClass);
         $this->assertFileNotExists($containerFilename);
