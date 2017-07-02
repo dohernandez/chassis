@@ -15,11 +15,12 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Test\Chassis\ApplicationMockHelpers;
 
 class ApplicationTest extends TestCase
 {
+    use ApplicationMockHelpers;
     use MockHelpers;
 
     public function testThatItReturnSameContainerInstance()
@@ -133,7 +134,9 @@ class ApplicationTest extends TestCase
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
-        $controller = $this->createController($response, $action, $pathParams);
+        $controller = $this->mockController($response, $action, $pathParams);
+
+        $controller->setTestCase($this);
 
         $routeResolver = $this->mock(
             RouteResolver::class,
@@ -152,56 +155,6 @@ class ApplicationTest extends TestCase
         });
 
         $this->assertSame($response, $application->run($request));
-    }
-
-    /**
-     * @param $response
-     * @param $action
-     * @param $pathParams
-     *
-     * @return mixed
-     */
-    private function createController($response, $action, $pathParams)
-    {
-        $controller = new class($this, $response, $action, $pathParams) implements ControllerInterface {
-            /**
-             * @var TestCase
-             */
-            private $testCase;
-
-            /*
-             * @var Response
-             */
-            private $response;
-
-            /**
-             * @var string
-             */
-            private $action;
-
-            /**
-             * @var array
-             */
-            private $pathParams;
-
-            public function __construct(TestCase $testCase, Response $response, string $action, array $pathParams)
-            {
-                $this->testCase = $testCase;
-                $this->response = $response;
-                $this->action = $action;
-                $this->pathParams = $pathParams;
-            }
-
-            public function __invoke(Request $request, string $action, array $pathParams): Response
-            {
-                $this->testCase->assertSame($this->action, $action);
-                $this->testCase->assertSame($this->pathParams, $pathParams);
-
-                return $this->response;
-            }
-        };
-
-        return $controller;
     }
 
     public function testThatItReturnExceptionResponseDueNotRouteResolverNotFound()
