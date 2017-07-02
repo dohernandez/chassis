@@ -6,11 +6,13 @@ use Chassis\Infrastructure\Application;
 use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use Chassis\Infrastructure\HTTP\HTTPExceptionHandler;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolver;
+use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
 use Chassis\Infrastructure\Routing\Route;
 use Chassis\Infrastructure\Routing\RouteResolver;
 use Closure;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +22,7 @@ class ApplicationTest extends TestCase
 {
     use MockHelpers;
 
-    public function testShouldReturnSameContainerInstance()
+    public function testThatItReturnSameContainerInstance()
     {
         $container = $this->mockContainer();
         $application = $this->createApplication($container);
@@ -44,7 +46,7 @@ class ApplicationTest extends TestCase
         return new Application($container);
     }
 
-    public function testGet()
+    public function testThatItAddRouteMethodGet()
     {
         $application = $this->createApplication();
 
@@ -56,7 +58,7 @@ class ApplicationTest extends TestCase
         $this->assertSame($route->getHandle(), 'index');
     }
 
-    public function testPut()
+    public function testThatItAddRouteMethodPut()
     {
         $application = $this->createApplication();
 
@@ -68,7 +70,7 @@ class ApplicationTest extends TestCase
         $this->assertSame($route->getHandle(), 'index');
     }
 
-    public function testPost()
+    public function testThatItAddRouteMethodPost()
     {
         $application = $this->createApplication();
 
@@ -80,7 +82,7 @@ class ApplicationTest extends TestCase
         $this->assertSame($route->getHandle(), 'index');
     }
 
-    public function testPatch()
+    public function testThatItAddRouteMethodPatch()
     {
         $application = $this->createApplication();
 
@@ -92,7 +94,7 @@ class ApplicationTest extends TestCase
         $this->assertSame($route->getHandle(), 'index');
     }
 
-    public function testDelete()
+    public function testThatItAddRouteMethodDelete()
     {
         $application = $this->createApplication();
 
@@ -104,7 +106,7 @@ class ApplicationTest extends TestCase
         $this->assertSame($route->getHandle(), 'index');
     }
 
-    public function testGetLoogerShouldReturnSameLoggerInstance()
+    public function testThatItReturnSameLoggerInstance()
     {
         $logger = $this->mock(Logger::class);
 
@@ -115,38 +117,34 @@ class ApplicationTest extends TestCase
         $this->assertSame($logger, $application->getLooger());
     }
 
-    public function testRunShouldReturnResponse()
+    public function testThatItReturnResponse()
     {
-        $request = $this->mockRequest(function ($request) {
-            $request->getPathInfo()->shouldBeCalled()->willReturn('/');
-            $request->getMethod()->shouldBeCalled()->willReturn('GET');
+        $action = 'index';
+        $route = '/';
+        $method = 'GET';
+        $pathParams = [];
+
+        $request = $this->mockRequest(function ($request) use ($route, $method) {
+            $request->getPathInfo()->shouldBeCalled()->willReturn($route);
+            $request->getMethod()->shouldBeCalled()->willReturn($method);
         });
 
         $response = $this->mockResponse(function ($response) {
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
-        $controller = new class($response) implements ControllerInterface {
-            private $response;
+        $controller = $this->createController($response, $action, $pathParams);
 
-            public function __construct(Response $response)
-            {
-                $this->response = $response;
+        $routeResolver = $this->mock(
+            RouteResolver::class,
+            function ($dispatcher) use ($controller, $action, $route, $method, $pathParams) {
+                $dispatcher->resolve($route, $method)->shouldBeCalled()->willReturn([
+                    $controller,
+                    $action,
+                    $pathParams,
+                ]);
             }
-
-            public function __invoke(Request $request, string $action, array $pathParams): Response
-            {
-                return $this->response;
-            }
-        };
-
-        $routeResolver = $this->mock(RouteResolver::class, function ($dispatcher) use ($controller) {
-            $dispatcher->resolve('/', 'GET')->shouldBeCalled()->willReturn([
-                $controller,
-                'index',
-                [],
-            ]);
-        });
+        );
 
         $application = $this->createApplication(function ($container) use ($routeResolver) {
             $container->has('app.route_resolver')->shouldBeCalled()->willReturn(true);
@@ -156,7 +154,56 @@ class ApplicationTest extends TestCase
         $this->assertSame($response, $application->run($request));
     }
 
-    public function testRunShouldReturnExceptionResponseDueNotRouteResolverNotFound()
+    /**
+     * @param $response
+     * @param $action
+     * @param $pathParams
+     *
+     * @return mixed
+     */
+    private function createController($response, $action, $pathParams)
+    {
+        $controller = new class($this, $response, $action, $pathParams) implements ControllerInterface {
+            /**
+             * @var TestCase
+             */
+            private $testCase;
+
+            /*
+             * @var Response
+             */
+            private $response;
+
+            /**
+             * @var string
+             */
+            private $action;
+
+            /**
+             * @var array
+             */
+            private $pathParams;
+
+            public function __construct(TestCase $testCase, Response $response, string $action, array $pathParams)
+            {
+                $this->testCase = $testCase;
+                $this->response = $response;
+                $this->action = $action;
+                $this->pathParams = $pathParams;
+            }
+
+            public function __invoke(Request $request, string $action, array $pathParams): Response
+            {
+                $this->testCase->assertSame($this->action, $action);
+
+                return $this->response;
+            }
+        };
+
+        return $controller;
+    }
+
+    public function testThatItReturnExceptionResponseDueNotRouteResolverNotFound()
     {
         $request = $this->mockRequest();
 
@@ -180,7 +227,13 @@ class ApplicationTest extends TestCase
         });
 
         $exceptionHandler = new class($logger, $responseResolver) extends HTTPExceptionHandler {
-            protected $errorId = 'd7f1f4b8-5cd9-11e7-907b-a6006ad3dba0';
+            public function __construct(LoggerInterface $logger, ResponseResolverInterface $responseResolver)
+            {
+                parent::__construct($logger, $responseResolver);
+
+                $this->errorId = 'd7f1f4b8-5cd9-11e7-907b-a6006ad3dba0';
+            }
+
         };
 
         $application = $this->createApplication(function ($container) use ($exceptionHandler) {
