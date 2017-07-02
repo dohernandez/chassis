@@ -18,6 +18,20 @@ class ActionSubscriber implements EventSubscriberInterface
     const PRIORITY_BEFORE_ACTION = 500;
     const PRIORITY_AFTER_ACTION = -500;
 
+    /*
+     * Elapsed time when the request started.
+     *
+     * @var float
+     */
+    protected $requestTime;
+
+    /**
+     * Elapsed time before the action is invoked.
+     *
+     * @var float
+     */
+    private $timeBeforeAction;
+
     /**
      * @inheritdoc
      */
@@ -30,29 +44,25 @@ class ActionSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Elapsed time before the action is invoked.
-     *
-     * @var float
-     */
-    private $timeBeforeAction;
-
-    /**
      * @param BeforeActionEvent $event
+     * @param float $time
      */
-    public function beforeAction(BeforeActionEvent $event)
+    public function beforeAction(BeforeActionEvent $event, float $time = null)
     {
-        $this->timeBeforeAction = microtime(true);
+        $this->requestTime = $event->getRequest()->server->get('REQUEST_TIME_FLOAT');
+        $this->timeBeforeAction = $time ?: microtime(true);
     }
 
     /**
      * @param AfterActionEvent $event
+     * @param float $time
      */
-    public function afterAction(AfterActionEvent $event)
+    public function afterAction(AfterActionEvent $event, float $time = null)
     {
         $this->applyTimingInfo(
             $event->getResponse(),
             $this->timeBeforeAction,
-            microtime(true)
+            $time ?: microtime(true)
         );
     }
 
@@ -80,7 +90,7 @@ class ActionSubscriber implements EventSubscriberInterface
      */
     private function formatRelativeTime(float $time = null): string
     {
-        return $this->formatTime(($time ?: microtime(true)) - $_SERVER['REQUEST_TIME_FLOAT']);
+        return $this->formatTime(($time ?: microtime(true)) - $this->requestTime);
     }
 
     /**
