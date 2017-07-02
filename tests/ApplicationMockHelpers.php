@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Test\Chassis;
+namespace Tests\Chassis;
 
 use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use PHPUnit\Framework\TestCase;
@@ -18,8 +18,7 @@ trait ApplicationMockHelpers
      */
     protected function mockController($response, $action, $pathParams)
     {
-        return new class($response, $action, $pathParams) implements ControllerInterface
-        {
+        return new class($response, $action, $pathParams) implements ControllerInterface {
             /**
              * @var TestCase
              */

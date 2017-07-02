@@ -3,7 +3,6 @@
 namespace Tests\Chassis;
 
 use Chassis\Infrastructure\Application;
-use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use Chassis\Infrastructure\HTTP\HTTPExceptionHandler;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolver;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
@@ -16,7 +15,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Test\Chassis\ApplicationMockHelpers;
 
 class ApplicationTest extends TestCase
 {
@@ -187,7 +185,6 @@ class ApplicationTest extends TestCase
 
                 $this->errorId = 'd7f1f4b8-5cd9-11e7-907b-a6006ad3dba0';
             }
-
         };
 
         $application = $this->createApplication(function ($container) use ($exceptionHandler) {
