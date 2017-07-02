@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis\HTTP\Action;
+namespace Tests\Chassis\Infrastructure\HTTP\Action;
 
 use Chassis\Infrastructure\HTTP\Action\Action;
 use PHPUnit\Framework\TestCase;

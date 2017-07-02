@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis\HTTP\Controller;
+namespace Tests\Chassis\Infrastructure\HTTP\Controller;
 
 use Chassis\Infrastructure\HTTP\Controller\Controller;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;

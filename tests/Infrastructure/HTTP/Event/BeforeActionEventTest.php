@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis\HTTP\Event;
+namespace Tests\Chassis\Infrastructure\HTTP\Event;
 
 use Chassis\Infrastructure\HTTP\Event\BeforeActionEvent;
 use PHPUnit\Framework\TestCase;

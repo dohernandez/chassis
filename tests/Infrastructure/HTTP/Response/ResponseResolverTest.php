@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis\HTTP\Response;
+namespace Tests\Chassis\Infrastructure\HTTP\Response;
 
 use Chassis\Application\Serializer\SerializerInterface;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolver;

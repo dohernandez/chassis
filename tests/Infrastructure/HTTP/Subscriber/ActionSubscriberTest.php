@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Chassis\HTTP\Subscriber;
+namespace Tests\Chassis\Infrastructure\HTTP\Subscriber;
 
 use Chassis\Infrastructure\HTTP\Event\AfterActionEvent;
 use Chassis\Infrastructure\HTTP\Event\BeforeActionEvent;
