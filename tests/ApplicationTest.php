@@ -195,6 +195,7 @@ class ApplicationTest extends TestCase
             public function __invoke(Request $request, string $action, array $pathParams): Response
             {
                 $this->testCase->assertSame($this->action, $action);
+                $this->testCase->assertSame($this->pathParams, $pathParams);
 
                 return $this->response;
             }
