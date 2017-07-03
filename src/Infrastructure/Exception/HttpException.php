@@ -2,7 +2,9 @@
 
 namespace Chassis\Infrastructure\Exception;
 
-class HttpException extends \RuntimeException implements HttpExceptionInterface
+use RuntimeException;
+
+class HttpException extends RuntimeException implements HttpExceptionInterface
 {
     /*
      * @var int
@@ -21,7 +23,7 @@ class HttpException extends \RuntimeException implements HttpExceptionInterface
      * @param array $headers
      * @param int $code
      */
-    public function __construct(int $statusCode, $message = null, \Exception $previous = null, array $headers = [], $code = 0)
+    public function __construct(int $statusCode, $message = '', \Exception $previous = null, array $headers = [], $code = 0)
     {
         $this->statusCode = $statusCode;
         $this->headers = $headers;

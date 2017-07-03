@@ -120,12 +120,13 @@ class ApplicationTest extends TestCase
     public function testThatItReturnResponse()
     {
         $action = 'index';
-        $route = '/';
+        $endpoint = '/';
         $method = 'GET';
         $pathParams = [];
+        $route = new Route($method, $endpoint, $action);
 
-        $request = $this->mockRequest(function ($request) use ($route, $method) {
-            $request->getPathInfo()->shouldBeCalled()->willReturn($route);
+        $request = $this->mockRequest(function ($request) use ($endpoint, $method) {
+            $request->getPathInfo()->shouldBeCalled()->willReturn($endpoint);
             $request->getMethod()->shouldBeCalled()->willReturn($method);
         });
 
@@ -133,18 +134,20 @@ class ApplicationTest extends TestCase
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
-        $controller = $this->mockController($response, $action, $pathParams);
+        $controller = $this->mockController($request, $response, $action, $pathParams);
 
         $controller->setTestCase($this);
 
         $routeResolver = $this->mock(
             RouteResolver::class,
-            function ($dispatcher) use ($controller, $action, $route, $method, $pathParams) {
-                $dispatcher->resolve($route, $method)->shouldBeCalled()->willReturn([
+            function ($routeResolver) use ($controller, $action, $endpoint, $method, $pathParams, $route) {
+                $routeResolver->resolve($endpoint, $method)->shouldBeCalled()->willReturn([
                     $controller,
                     $action,
                     $pathParams,
                 ]);
+
+                $routeResolver->setRoutes([ $route ])->shouldBeCalled();
             }
         );
 
@@ -152,6 +155,8 @@ class ApplicationTest extends TestCase
             $container->has('app.route_resolver')->shouldBeCalled()->willReturn(true);
             $container->get('app.route_resolver')->shouldBeCalled()->willReturn($routeResolver);
         });
+
+        $application->addRoute($route);
 
         $this->assertSame($response, $application->run($request));
     }

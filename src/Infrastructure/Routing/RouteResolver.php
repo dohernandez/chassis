@@ -18,17 +18,33 @@ class RouteResolver implements RouteResolverInterface
     private $container;
 
     /**
+     * @var array
+     */
+    private $routes;
+
+    /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->routes = [];
+    }
+
+    /**
+     * @param array $routes
+     */
+    public function setRoutes(array $routes)
+    {
+        $this->routes = $routes;
     }
 
     /**
      * @param string $httpMethod
      * @param string $uri
      *
+     * @throws NotFoundHttpException When route not found
+     * @throws MethodNotAllowedHttpException When method not allowed
      * @return array
      */
     public function resolve(string $httpMethod, string $uri): array
@@ -56,14 +72,14 @@ class RouteResolver implements RouteResolverInterface
     protected function getDispatcher(): Dispatcher
     {
         if ($this->getContainer()->has('app.request_dispatcher')) {
-            return $this->getContainer()->has('app.request_dispatcher');
+            return $this->getContainer()->get('app.request_dispatcher');
         }
 
         $routes = $this->routes;
 
-        return \FastRoute\simpleDispatcher(function (RouteCollector $r) use ($routes) {
+        return \FastRoute\simpleDispatcher(function (RouteCollector $routeCollector) use ($routes) {
             foreach ($routes as $route) {
-                $r->addRoute($route->getMethod(), $route->getRoutePattern(), $route->getHandle());
+                $routeCollector->addRoute($route->getMethod(), $route->getRoutePattern(), $route->getHandle());
             }
         });
     }

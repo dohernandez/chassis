@@ -14,4 +14,9 @@ interface RouteResolverInterface
      * @return array
      */
     public function resolve(string $httpMethod, string $uri): array;
+
+    /**
+     * @param array $routes
+     */
+    public function setRoutes(array $routes);
 }

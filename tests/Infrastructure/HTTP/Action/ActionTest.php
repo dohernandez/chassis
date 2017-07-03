@@ -16,7 +16,7 @@ class ActionTest extends TestCase
         $action = new class() extends Action {
             public function __invoke(Request $request, array $args)
             {
-                return true;
+                return [ $request, $args ];
             }
         };
 

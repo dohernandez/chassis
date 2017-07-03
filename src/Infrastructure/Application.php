@@ -165,6 +165,7 @@ class Application
     protected function handleRequest(Request $request): Response
     {
         $routeResolver = $this->getRouteResolver();
+        $routeResolver->setRoutes($this->routes);
 
         return $this->process($routeResolver, $request);
     }
@@ -182,13 +183,13 @@ class Application
     }
 
     /**
-     * @param RouteResolverInterface $RouteResolver
+     * @param RouteResolverInterface $routeResolver
      * @param Request $request
      * @return Response
      */
-    protected function process(RouteResolverInterface $RouteResolver, Request $request): Response
+    protected function process(RouteResolverInterface $routeResolver, Request $request): Response
     {
-        list($controller, $action, $params) = $RouteResolver->resolve(rawurldecode($request->getPathInfo()), $request->getMethod());
+        list($controller, $action, $params) = $routeResolver->resolve(rawurldecode($request->getPathInfo()), $request->getMethod());
 
         if ($controller instanceof CommandController) {
             return $controller->__invoke($request, $action, $params);

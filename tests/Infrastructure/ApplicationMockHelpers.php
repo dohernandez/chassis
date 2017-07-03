@@ -10,15 +10,16 @@ use Symfony\Component\HttpFoundation\Response;
 trait ApplicationMockHelpers
 {
     /**
-     * @param $response
-     * @param $action
-     * @param $pathParams
+     * @param Request $request
+     * @param Response $response
+     * @param string $action
+     * @param array $pathParams
      *
      * @return mixed
      */
-    protected function mockController($response, $action, $pathParams)
+    protected function mockController(Request $request, Response $response, string $action, array $pathParams)
     {
-        return new class($response, $action, $pathParams) implements ControllerInterface {
+        return new class($request, $response, $action, $pathParams) implements ControllerInterface {
             /**
              * @var TestCase
              */
@@ -39,15 +40,22 @@ trait ApplicationMockHelpers
              */
             private $pathParams;
 
-            public function __construct(Response $response, string $action, array $pathParams)
+            /**
+             * @var Request
+             */
+            private $request;
+
+            public function __construct(Request $request, Response $response, string $action, array $pathParams)
             {
                 $this->response = $response;
                 $this->action = $action;
                 $this->pathParams = $pathParams;
+                $this->request = $request;
             }
 
             public function __invoke(Request $request, string $action, array $pathParams): Response
             {
+                $this->testCase->assertSame($this->request, $request);
                 $this->testCase->assertSame($this->action, $action);
                 $this->testCase->assertSame($this->pathParams, $pathParams);
 
