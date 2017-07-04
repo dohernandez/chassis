@@ -18,6 +18,7 @@ class RouteResolverTest extends TestCase
     public function testThatItCheckConstants()
     {
         $this->assertSame('#', RouteResolver::CONTROLLER_METHOD_SEPARATOR);
+        $this->assertSame('index', RouteResolver::CONTROLLER_DEFAULT_METHOD);
     }
 
     public function testThatItReturnSameContainerInstance()
@@ -46,17 +47,42 @@ class RouteResolverTest extends TestCase
 
     public function testThatItReturnControllerInstanceAndDefaultIndexMethod()
     {
-        $httpMethod = 'POST';
+        $httpMethod = 'GET';
         $uri = '/';
-        $action = 'Action#create';
-        $containerId = 'app.controller[Action]';
 
-        $dispatcher = $this->mock(Dispatcher::class, function ($dispatcher) use ($httpMethod, $uri, $action) {
-            $dispatcher->dispatch($httpMethod, $uri)->shouldBeCalled()->willReturn([ Dispatcher::FOUND, $action, [] ]);
+        $dispatcher = $this->mock(Dispatcher::class, function ($dispatcher) use ($httpMethod, $uri) {
+            $dispatcher->dispatch($httpMethod, $uri)->shouldBeCalled()->willReturn([ Dispatcher::FOUND, '', [] ]);
         });
         $controller = $this->mock(ControllerInterface::class);
         $routeResolver = $this->createRouteResolver(
-            function ($container) use ($dispatcher, $action, $containerId, $controller) {
+            function ($container) use ($dispatcher, $controller) {
+                $container->has('app.request_dispatcher')->shouldBeCalled()->willReturn(true);
+                $container->get('app.request_dispatcher')->shouldBeCalled()->willReturn($dispatcher);
+
+                $container->has('app.controller[]')->shouldBeCalled()->willReturn(false);
+                $container->get('app.controller')->shouldBeCalled()->willReturn($controller);
+            }
+        );
+
+        $this->assertSame([ $controller, 'index', [] ], $routeResolver->resolve($httpMethod, $uri));
+    }
+
+    public function testThatItReturnControllerInstanceAndActionMethod()
+    {
+        $httpMethod = 'POST';
+        $uri = '/create';
+        $containerId = 'app.controller[Action]';
+
+        $dispatcher = $this->mock(Dispatcher::class, function ($dispatcher) use ($httpMethod, $uri) {
+            $dispatcher->dispatch($httpMethod, $uri)->shouldBeCalled()->willReturn([
+                Dispatcher::FOUND,
+                'Action#create',
+                []
+            ]);
+        });
+        $controller = $this->mock(ControllerInterface::class);
+        $routeResolver = $this->createRouteResolver(
+            function ($container) use ($dispatcher, $containerId, $controller) {
                 $container->has('app.request_dispatcher')->shouldBeCalled()->willReturn(true);
                 $container->get('app.request_dispatcher')->shouldBeCalled()->willReturn($dispatcher);
 
@@ -70,7 +96,7 @@ class RouteResolverTest extends TestCase
 
     public function testThatItThrowNotFoundHttpException()
     {
-        $httpMethod = 'POST';
+        $httpMethod = 'GET';
         $uri = '/';
 
         $dispatcher = $this->mock(Dispatcher::class, function ($dispatcher) use ($httpMethod, $uri) {
@@ -91,7 +117,7 @@ class RouteResolverTest extends TestCase
     public function testThatItThrowMethodNotAllowedHttpException()
     {
         $httpMethod = 'POST';
-        $uri = '/';
+        $uri = '/create';
         $action = 'Action#create';
 
         $dispatcher = $this->mock(Dispatcher::class, function ($dispatcher) use ($httpMethod, $uri, $action) {
