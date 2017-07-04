@@ -77,7 +77,7 @@ class RouteResolverTest extends TestCase
             $dispatcher->dispatch($httpMethod, $uri)->shouldBeCalled()->willReturn([
                 Dispatcher::FOUND,
                 'Action#create',
-                []
+                [],
             ]);
         });
         $controller = $this->mock(ControllerInterface::class);
@@ -124,7 +124,7 @@ class RouteResolverTest extends TestCase
             $dispatcher->dispatch($httpMethod, $uri)->shouldBeCalled()->willReturn([
                 Dispatcher::METHOD_NOT_ALLOWED,
                 [ 'GET' ],
-                []
+                [],
             ]);
         });
         $routeResolver = $this->createRouteResolver(

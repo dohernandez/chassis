@@ -101,7 +101,7 @@ class RouteResolver implements RouteResolverInterface
     protected function getController(string $action = null): array
     {
         list($controller, $method) = explode(self::CONTROLLER_METHOD_SEPARATOR, $action) + [
-            1 => self::CONTROLLER_DEFAULT_METHOD
+            1 => self::CONTROLLER_DEFAULT_METHOD,
         ];
 
         $containerId = sprintf('app.controller[%s]', $controller);
