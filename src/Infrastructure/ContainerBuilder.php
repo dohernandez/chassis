@@ -10,6 +10,7 @@ use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 
 class ContainerBuilder
 {
+    const BASE_YML_SERVICES_PATH = 'services/services.yml';
     const DEFAULT_CONTAINER_CLASS = 'ApplicationContainer';
     const DEFAULT_YML_SERVICES = 'services.yml';
     const EVENT_DISPATCHER_SERVICE = 'app.event_dispatcher';
@@ -103,6 +104,9 @@ class ContainerBuilder
     {
         $container = new SymfonyContainerBuilder();
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
+        # load chassis services
+        $loader->load(__DIR__ . DIRECTORY_SEPARATOR . self::BASE_YML_SERVICES_PATH);
+        # load application services
         $loader->load($this->ymlServicesPath);
 
         $container->setParameter('app_name', $this->appName);

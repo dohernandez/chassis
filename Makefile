@@ -60,7 +60,7 @@ db.reset:
 test:
 	@printf "$(OK_COLOR)==> Running unit tests...$(NO_COLOR)\n"
 	@docker run -it --rm -v $(PWD):/app -w /app --network=chassis_default \
-	-e APP_NAME='chassis-test' -e APP_DEBUG='false' \
+	-e APP_NAME='chassis-test' -e APP_DEBUG='false' -e LOG_DIR='' -e DATABASE_URL='' \
 	averor/docker-phpunit-php-7.1 vendor/bin/phpunit --coverage-text=build/coverage.txt
 	@cat $(PWD)/build/coverage.txt
 	@printf "\n"

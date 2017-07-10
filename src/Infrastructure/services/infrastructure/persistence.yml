@@ -1,7 +1,7 @@
 parameters:
 
   database:
-    driver: '%env(PHP_DATABASE_DRIVER)%'
+    driver: '%env(PHP_DATABASE_DRIVER, pdo_mysql)%'
     url: '%env(DATABASE_URL)%'
 
 services:

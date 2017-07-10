@@ -2,18 +2,13 @@
 
 namespace Tests\Chassis\Infrastructure;
 
-use Chassis\Infrastructure\Application;
-use Chassis\Infrastructure\HTTP\HTTPExceptionHandler;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolver;
-use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
 use Chassis\Infrastructure\Routing\Route;
-use Chassis\Infrastructure\Routing\RouteResolver;
-use Closure;
+use Chassis\Infrastructure\Routing\RouteResolverInterface;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use stdClass;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\Chassis\MockHelpers;
 
@@ -28,22 +23,6 @@ class ApplicationTest extends TestCase
         $application = $this->createApplication($container);
 
         $this->assertSame($container, $application->getContainer());
-    }
-
-    /**
-     * @param ContainerInterface|Closure|null $container
-     *
-     * @return Application
-     */
-    private function createApplication($container = null): Application
-    {
-        if (is_null($container)) {
-            $container = $this->mockContainer();
-        } elseif ($container instanceof Closure) {
-            $container = $this->mockContainer($container);
-        }
-
-        return new Application($container);
     }
 
     public function testThatItAddRouteMethodGet()
@@ -139,9 +118,9 @@ class ApplicationTest extends TestCase
         $controller->setTestCase($this);
 
         $routeResolver = $this->mock(
-            RouteResolver::class,
+            RouteResolverInterface::class,
             function ($routeResolver) use ($controller, $action, $endpoint, $method, $pathParams, $route) {
-                $routeResolver->resolve($endpoint, $method)->shouldBeCalled()->willReturn([
+                $routeResolver->resolve($method, $endpoint)->shouldBeCalled()->willReturn([
                     $controller,
                     $action,
                     $pathParams,
@@ -161,8 +140,11 @@ class ApplicationTest extends TestCase
         $this->assertSame($response, $application->run($request));
     }
 
-    public function testThatItReturnExceptionResponseDueNotRouteResolverNotFound()
+    public function testThatItThrowAnExceptionResponseDueNotRouteResolverNotFound()
     {
+        $errorId = uniqid();
+        $errorMessage = 'Route resolver is not defined.';
+
         $request = $this->mockRequest();
 
         $logger = $this->mock(Logger::class, function ($logger) {
@@ -177,21 +159,9 @@ class ApplicationTest extends TestCase
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
-        $responseResolver = $this->mock(ResponseResolver::class, function ($responseResolver) use ($response) {
-            $responseResolver->resolve(
-                [ 'unique_code' => 'd7f1f4b8-5cd9-11e7-907b-a6006ad3dba0', 'message' => 'Route resolver is not defined.' ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            )->shouldBeCalled()->willReturn($response);
-        });
+        $responseResolver = $this->mockResponseResolver($response, $errorId, $errorMessage);
 
-        $exceptionHandler = new class($logger, $responseResolver) extends HTTPExceptionHandler {
-            public function __construct(LoggerInterface $logger, ResponseResolverInterface $responseResolver)
-            {
-                parent::__construct($logger, $responseResolver);
-
-                $this->errorId = 'd7f1f4b8-5cd9-11e7-907b-a6006ad3dba0';
-            }
-        };
+        $exceptionHandler = $this->mockExceptionHandler($errorId, $logger, $responseResolver);
 
         $application = $this->createApplication(function ($container) use ($exceptionHandler) {
             $container->has('app.route_resolver')->shouldBeCalled()->willReturn(false);
@@ -199,5 +169,66 @@ class ApplicationTest extends TestCase
         });
 
         $this->assertSame($response, $application->run($request));
+    }
+
+    public function testThatItThrowAnExceptionDueRouteResolverInstanceNotImplementRouteResolverInterface()
+    {
+        $errorId = uniqid();
+        $errorMessage = sprintf(
+            'The route resolver class must be an instance of %s',
+            RouteResolverInterface::class
+        );
+        $request = $this->mockRequest();
+
+        $response = $this->mockResponse(function ($response) {
+            $response->send()->shouldBeCalled()->willReturn($response);
+        });
+
+        $logger = $this->mock(Logger::class, function ($logger) use ($errorId) {
+            $logger->log(
+                LogLevel::ERROR,
+                'Route resolver is not defined.',
+                [ 'unique_code'=> $errorId]
+            );
+        });
+
+        $responseResolver = $this->mockResponseResolver($response, $errorId, $errorMessage);
+        $exceptionHandler = $this->mockExceptionHandler($errorId, $logger, $responseResolver);
+
+        $application = $this->createApplication(function ($container) use ($exceptionHandler) {
+            $container->has('app.route_resolver')->shouldBeCalled()->willReturn(true);
+            $container->get('app.route_resolver')->shouldBeCalled()->willReturn(new stdClass());
+
+            $container->get('app.http_exception_handler')->shouldBeCalled()->willReturn($exceptionHandler);
+        });
+
+        $this->assertSame($response, $application->run($request));
+    }
+
+    /**
+     * @param Response $response
+     * @param string $errorId
+     * @param string $message
+     * @param int $status
+     *
+     * @return ResponseResolver
+     */
+    private function mockResponseResolver(
+        Response $response,
+        string $errorId,
+        string $message,
+        int $status = Response::HTTP_INTERNAL_SERVER_ERROR
+    ): ResponseResolver {
+        $responseResolver = $this->mock(
+            ResponseResolver::class,
+            function ($responseResolver) use ($response, $errorId, $message, $status) {
+                $responseResolver->resolve(
+                    [ 'unique_code' => $errorId, 'message' => $message ],
+                    $status
+                )->shouldBeCalled()->willReturn($response);
+            }
+        );
+
+        return $responseResolver;
     }
 }

@@ -1,7 +1,16 @@
 imports:
   - { resource: parameters.yml }
-  - { resource: services/presentation.yml }
-  - { resource: services/infrastructure.yml }
+
+  # presentation
+  - { resource: presentation/action.yml }
+
+  # infrastructure
+  - { resource: infrastructure/logger.yml }
+  - { resource: infrastructure/http.yml }
+  - { resource: infrastructure/serialize.yml }
+  - { resource: infrastructure/command_bus.yml }
+  - { resource: infrastructure/persistence.yml }
+  - { resource: infrastructure/routing.yml }
 
 services:
 
@@ -18,6 +27,3 @@ services:
 
   app.event_dispatcher:
     class: Symfony\Component\EventDispatcher\EventDispatcher
-
-  app.request_dispatcher:
-    class: FastRoute\simpleDispatcher

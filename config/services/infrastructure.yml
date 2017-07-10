@@ -1,7 +1,0 @@
-imports:
-  - { resource: infrastructure/logger.yml }
-  - { resource: infrastructure/http.yml }
-  - { resource: infrastructure/serialize.yml }
-  - { resource: infrastructure/command_bus.yml }
-  - { resource: infrastructure/persistence.yml }
-  - { resource: infrastructure/routing.yml }

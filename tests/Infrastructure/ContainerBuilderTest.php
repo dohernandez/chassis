@@ -26,6 +26,16 @@ class ContainerBuilderTest extends TestCase
         return __DIR__ . "/../sandbox/app/storage/cache/$containerClass.php";
     }
 
+    public function testThatItCheckConstant()
+    {
+        $this->assertSame(ContainerBuilder::BASE_YML_SERVICES_PATH, 'services/services.yml');
+        $this->assertSame(ContainerBuilder::DEFAULT_CONTAINER_CLASS, 'ApplicationContainer');
+        $this->assertSame(ContainerBuilder::DEFAULT_YML_SERVICES, 'services.yml');
+        $this->assertSame(ContainerBuilder::EVENT_DISPATCHER_SERVICE, 'app.event_dispatcher');
+        $this->assertSame(ContainerBuilder::EVENT_LISTENER_TAG, 'app.event_listener');
+        $this->assertSame(ContainerBuilder::EVENT_SUBSCRIBER_TAG, 'app.event_subscriber');
+    }
+
     public function testBuildContainerFromYML()
     {
         $base_dir = __DIR__ . '/../sandbox';

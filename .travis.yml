@@ -9,7 +9,7 @@ matrix:
     - php: hhvm-3.18
 
 env:
-  - APP_DEBUG="false" APP_NAME="chassis-test"
+  - APP_DEBUG="false" APP_NAME="chassis-test" LOG_DIR="" DATABASE_URL=""
 
 cache:
     directories:

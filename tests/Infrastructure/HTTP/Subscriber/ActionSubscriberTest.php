@@ -48,17 +48,15 @@ class ActionSubscriberTest extends TestCase
             $beforeAction->getRequest()->shouldBeCalled()->willReturn($request);
         });
 
-        $timeBeforeAction =  microtime(true);
-        $subscriber->beforeAction($beforeAction, $timeBeforeAction);
+        $subscriber->beforeAction($beforeAction);
 
-        $timeAfterAction =  microtime(true);
-        $response = $this->mockResponse($this->getResponseInit($timeRequest, $timeBeforeAction, $timeAfterAction));
+        $response = $this->mockResponse($this->getResponseInit());
 
         $afterAction = $this->mock(AfterActionEvent::class, function ($afterAction) use ($response) {
             $afterAction->getResponse()->shouldBeCalled()->willReturn($response);
         });
 
-        $subscriber->afterAction($afterAction, $timeAfterAction);
+        $subscriber->afterAction($afterAction);
     }
 
     /**
@@ -78,35 +76,18 @@ class ActionSubscriberTest extends TestCase
     }
 
     /**
-     * @param float $timeRequest
-     * @param float $timeBeforeAction
-     * @param float $timeAfterAction
-     *
      * @return Closure
      */
-    private function getResponseInit(float $timeRequest, float $timeBeforeAction, float $timeAfterAction): Closure
+    private function getResponseInit(): Closure
     {
-        $headerXTookToAction = $this->formatTime($timeBeforeAction - $timeRequest);
-        $headerXTookAction = $this->formatTime($timeAfterAction - $timeBeforeAction);
-
-        $header = $this->mock(HeaderBag::class, function ($header) use ($headerXTookToAction, $headerXTookAction) {
+        $header = $this->mock(HeaderBag::class, function ($header) {
             $header->set(ActionSubscriber::HEADER_X_TOOK, Argument::containingString(' ms'))->shouldBeCalled();
-            $header->set(ActionSubscriber::HEADER_X_TOOK_TO_ACTION, $headerXTookToAction)->shouldBeCalled();
-            $header->set(ActionSubscriber::HEADER_X_TOOK_ACTION, $headerXTookAction)->shouldBeCalled();
+            $header->set(ActionSubscriber::HEADER_X_TOOK_TO_ACTION, Argument::containingString(' ms'))->shouldBeCalled();
+            $header->set(ActionSubscriber::HEADER_X_TOOK_ACTION, Argument::containingString(' ms'))->shouldBeCalled();
         });
 
         return function ($response) use ($header) {
             $response->headers = $header;
         };
-    }
-
-    /**
-     * @param float $time
-     *
-     * @return string
-     */
-    private function formatTime(float $time): string
-    {
-        return round($time * 1000, 3) . ' ms';
     }
 }

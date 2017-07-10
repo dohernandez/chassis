@@ -11,7 +11,7 @@ class IndexHandlerTest extends TestCase
 {
     use MockHelpers;
 
-    public function testHandle()
+    public function testThatItProcess()
     {
         $httpText = 'Test index chassis';
 
@@ -21,6 +21,6 @@ class IndexHandlerTest extends TestCase
 
         $handle = new IndexHandler();
 
-        $this->assertSame($httpText, $handle->handle($command));
+        $this->assertSame($httpText, $handle->process($command));
     }
 }

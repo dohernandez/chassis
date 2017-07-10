@@ -6,7 +6,7 @@ use Chassis\Application\Command\IndexCommand;
 
 class IndexHandler
 {
-    public function handle(IndexCommand $command)
+    public function process(IndexCommand $command)
     {
         return $command->getHttpText();
     }

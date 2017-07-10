@@ -1,6 +1,7 @@
 {
   "name": "dohernandez/chassis",
   "description": "Simple php's application chassis based on open-sources packages.",
+  "keywords": [ "framework", "chassis" ],
   "authors": [
     {
       "name": "Darien Hernandez",
@@ -34,7 +35,7 @@
       "Chassis\\": "src/"
     },
     "files": [
-      "app/helpers.php"
+      "src/helpers.php"
     ]
   },
   "autoload-dev": {
@@ -42,7 +43,7 @@
       "Tests\\Chassis\\": "tests/"
     },
     "files": [
-      "app/helpers.php"
+      "src/helpers.php"
     ]
   },
   "config": {

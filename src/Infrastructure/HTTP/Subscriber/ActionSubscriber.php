@@ -45,24 +45,23 @@ class ActionSubscriber implements EventSubscriberInterface
 
     /**
      * @param BeforeActionEvent $event
-     * @param float $time
      */
-    public function beforeAction(BeforeActionEvent $event, float $time = null)
+    public function beforeAction(BeforeActionEvent $event)
     {
         $this->requestTime = $event->getRequest()->server->get('REQUEST_TIME_FLOAT');
-        $this->timeBeforeAction = $time ?: microtime(true);
+        $this->timeBeforeAction = microtime(true);
     }
 
     /**
      * @param AfterActionEvent $event
      * @param float $time
      */
-    public function afterAction(AfterActionEvent $event, float $time = null)
+    public function afterAction(AfterActionEvent $event)
     {
         $this->applyTimingInfo(
             $event->getResponse(),
             $this->timeBeforeAction,
-            $time ?: microtime(true)
+            microtime(true)
         );
     }
 

@@ -7,3 +7,4 @@ services:
 
   app.route_resolver:
     class: Chassis\Infrastructure\Routing\RouteResolver
+    autowire: true

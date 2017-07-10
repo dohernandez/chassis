@@ -34,10 +34,14 @@ class RouteResolver implements RouteResolverInterface
 
     /**
      * @param array $routes
+     *
+     * @return static
      */
     public function setRoutes(array $routes)
     {
         $this->routes = $routes;
+
+        return $this;
     }
 
     /**

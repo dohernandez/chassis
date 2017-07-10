@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
+use UnexpectedValueException;
 
 class Application
 {
@@ -121,6 +122,7 @@ class Application
     {
         try {
             $request = $this->getRequest($request);
+
             $response = $this->handleRequest($request);
         } catch (Throwable $throwable) {
             $response = $this->handleException($throwable);
@@ -165,7 +167,6 @@ class Application
     protected function handleRequest(Request $request): Response
     {
         $routeResolver = $this->getRouteResolver();
-        $routeResolver->setRoutes($this->routes);
 
         return $this->process($routeResolver, $request);
     }
@@ -176,7 +177,17 @@ class Application
     protected function getRouteResolver(): RouteResolverInterface
     {
         if ($this->getContainer()->has('app.route_resolver')) {
-            return $this->getContainer()->get('app.route_resolver');
+            $routeResolver = $this->getContainer()->get('app.route_resolver');
+
+            if ($routeResolver instanceof RouteResolverInterface === false) {
+                throw new UnexpectedValueException(
+                    sprintf('The route resolver class must be an instance of %s', RouteResolverInterface::class)
+                );
+            }
+
+            $routeResolver->setRoutes($this->routes);
+
+            return $routeResolver;
         }
 
         throw new \LogicException('Route resolver is not defined.');
@@ -189,7 +200,7 @@ class Application
      */
     protected function process(RouteResolverInterface $routeResolver, Request $request): Response
     {
-        list($controller, $action, $params) = $routeResolver->resolve(rawurldecode($request->getPathInfo()), $request->getMethod());
+        list($controller, $action, $params) = $routeResolver->resolve($request->getMethod(), rawurldecode($request->getPathInfo()));
 
         if ($controller instanceof CommandController) {
             return $controller->__invoke($request, $action, $params);
