@@ -1,7 +1,7 @@
 {
   "name": "dohernandez/chassis",
   "description": "Simple php's application chassis based on open-sources packages.",
-  "keywords": [ "framework", "chassis" ],
+  "keywords": [ "framework", "micro-service", "api" ],
   "authors": [
     {
       "name": "Darien Hernandez",
