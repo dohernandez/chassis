@@ -3,6 +3,7 @@
 namespace Tests\Chassis\Infrastructure\Routing;
 
 use Chassis\Infrastructure\Exception\MethodNotAllowedHttpException;
+use Chassis\Infrastructure\Exception\NotFoundException;
 use Chassis\Infrastructure\Exception\NotFoundHttpException;
 use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use Chassis\Infrastructure\Routing\RouteResolver;
@@ -94,7 +95,7 @@ class RouteResolverTest extends TestCase
         $this->assertSame([ $controller, 'create', [] ], $routeResolver->resolve($httpMethod, $uri));
     }
 
-    public function testThatItThrowNotFoundHttpException()
+    public function testThatItThrowNotFoundException()
     {
         $httpMethod = 'GET';
         $uri = '/';
@@ -109,7 +110,7 @@ class RouteResolverTest extends TestCase
             }
         );
 
-        $this->expectException(NotFoundHttpException::class);
+        $this->expectException(NotFoundException::class);
 
         $routeResolver->resolve($httpMethod, $uri);
     }

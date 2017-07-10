@@ -3,6 +3,7 @@
 namespace Chassis\Infrastructure\Routing;
 
 use Chassis\Infrastructure\Exception\MethodNotAllowedHttpException;
+use Chassis\Infrastructure\Exception\NotFoundException;
 use Chassis\Infrastructure\Exception\NotFoundHttpException;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
@@ -59,7 +60,7 @@ class RouteResolver implements RouteResolverInterface
         $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 
         if ($routeInfo[0] == Dispatcher::NOT_FOUND) {
-            throw new NotFoundHttpException();
+            throw new NotFoundException();
         }
 
         if ($routeInfo[0] == Dispatcher::METHOD_NOT_ALLOWED) {

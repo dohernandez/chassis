@@ -2,6 +2,7 @@
 
 namespace Tests\Chassis\Infrastructure;
 
+use Chassis\Infrastructure\Exception\NotFoundException;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolver;
 use Chassis\Infrastructure\Routing\Route;
 use Chassis\Infrastructure\Routing\RouteResolverInterface;
@@ -147,13 +148,7 @@ class ApplicationTest extends TestCase
 
         $request = $this->mockRequest();
 
-        $logger = $this->mock(Logger::class, function ($logger) {
-            $logger->log(
-                LogLevel::ERROR,
-                'Route resolver is not defined.',
-                [ 'unique_code'=> 'd7f1f4b8-5cd9-11e7-907b-a6006ad3dba0']
-            );
-        });
+        $logger = $this->mockLogger($errorId, $errorMessage);
 
         $response = $this->mockResponse(function ($response) {
             $response->send()->shouldBeCalled()->willReturn($response);
@@ -184,14 +179,7 @@ class ApplicationTest extends TestCase
             $response->send()->shouldBeCalled()->willReturn($response);
         });
 
-        $logger = $this->mock(Logger::class, function ($logger) use ($errorId) {
-            $logger->log(
-                LogLevel::ERROR,
-                'Route resolver is not defined.',
-                [ 'unique_code'=> $errorId]
-            );
-        });
-
+        $logger = $this->mockLogger($errorId, $errorMessage);
         $responseResolver = $this->mockResponseResolver($response, $errorId, $errorMessage);
         $exceptionHandler = $this->mockExceptionHandler($errorId, $logger, $responseResolver);
 
@@ -205,30 +193,46 @@ class ApplicationTest extends TestCase
         $this->assertSame($response, $application->run($request));
     }
 
-    /**
-     * @param Response $response
-     * @param string $errorId
-     * @param string $message
-     * @param int $status
-     *
-     * @return ResponseResolver
-     */
-    private function mockResponseResolver(
-        Response $response,
-        string $errorId,
-        string $message,
-        int $status = Response::HTTP_INTERNAL_SERVER_ERROR
-    ): ResponseResolver {
-        $responseResolver = $this->mock(
-            ResponseResolver::class,
-            function ($responseResolver) use ($response, $errorId, $message, $status) {
-                $responseResolver->resolve(
-                    [ 'unique_code' => $errorId, 'message' => $message ],
-                    $status
-                )->shouldBeCalled()->willReturn($response);
+    public function testThatItThrowAnExceptionDueRouteNotFound()
+    {
+        $action = 'index';
+        $errorId = uniqid();
+        $errorMessage = 'Resource not found.';
+        $endpoint = '/';
+        $method = 'GET';
+        $route = new Route($method, $endpoint, $action);
+
+        $request = $this->mockRequest(function ($request) use ($endpoint, $method) {
+            $request->getPathInfo()->shouldBeCalled()->willReturn($endpoint);
+            $request->getMethod()->shouldBeCalled()->willReturn($method);
+        });
+
+        $response = $this->mockResponse(function ($response) {
+            $response->send()->shouldBeCalled()->willReturn($response);
+        });
+
+        $logger = $this->mockLogger($errorId, $errorMessage);
+        $responseResolver = $this->mockResponseResolver($response, $errorId, $errorMessage, Response::HTTP_NOT_FOUND);
+        $exceptionHandler = $this->mockExceptionHandler($errorId, $logger, $responseResolver);
+
+        $routeResolver = $this->mock(
+            RouteResolverInterface::class,
+            function ($routeResolver) use ($endpoint, $method, $route) {
+                $routeResolver->resolve($method, $endpoint)->shouldBeCalled()->willThrow(new NotFoundException());
+
+                $routeResolver->setRoutes([ $route ])->shouldBeCalled();
             }
         );
 
-        return $responseResolver;
+        $application = $this->createApplication(function ($container) use ($exceptionHandler, $routeResolver) {
+            $container->has('app.route_resolver')->shouldBeCalled()->willReturn(true);
+            $container->get('app.route_resolver')->shouldBeCalled()->willReturn($routeResolver);
+
+            $container->get('app.http_exception_handler')->shouldBeCalled()->willReturn($exceptionHandler);
+        });
+
+        $application->addRoute($route);
+
+        $this->assertSame($response, $application->run($request));
     }
 }
