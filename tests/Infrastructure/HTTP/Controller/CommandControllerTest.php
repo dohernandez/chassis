@@ -25,7 +25,7 @@ class CommandControllerTest extends TestCase
         $controller->setTestCase($this);
 
         $request = $this->mockRequest($this->getRequestContentJsonInit());
-        $this->assertSame($response, $controller->__invoke($request, $routeAction, $args));
+        $this->assertSame($response, $controller($request, $routeAction, $args));
     }
 
     /**

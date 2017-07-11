@@ -17,6 +17,6 @@ class IndexActionTest extends TestCase
         $action = new IndexAction();
 
         $this->assertInstanceOf(Action::class, $action);
-        $this->assertSame('Welcome to action chassis', $action->__invoke($request, []));
+        $this->assertSame('Welcome to action chassis', $action($request, []));
     }
 }

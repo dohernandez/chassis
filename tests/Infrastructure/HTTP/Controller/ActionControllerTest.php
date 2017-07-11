@@ -39,7 +39,7 @@ class ActionControllerTest extends TestCase
 
         $controller = new ActionController($container, $responseResolver, $eventDispatcher);
 
-        $this->assertSame($response, $controller->__invoke($request, $routeAction, []));
+        $this->assertSame($response, $controller($request, $routeAction, []));
     }
 
     /**
@@ -118,6 +118,6 @@ class ActionControllerTest extends TestCase
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(sprintf('Action `%s` must extends `%s`', stdClass::class, Action::class));
 
-        $controller->__invoke($request, $routeAction, []);
+        $controller($request, $routeAction, []);
     }
 }

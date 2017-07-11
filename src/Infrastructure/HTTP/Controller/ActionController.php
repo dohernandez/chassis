@@ -19,7 +19,7 @@ class ActionController extends Controller
     {
         $action = $this->resolveAction($action);
 
-        return $action->__invoke($request, $params);
+        return $action($request, $params);
     }
 
     /**

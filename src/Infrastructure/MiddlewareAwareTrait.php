@@ -38,7 +38,7 @@ class MiddlewareAwareTrait
         $next = $this->stack->top();
         $this->stack[] = function (
             ServerRequestInterface $request,
-            ResponseInterface $response
+            ResponseInterface $response = null
         ) use (
             $callable,
             $next
@@ -77,8 +77,16 @@ class MiddlewareAwareTrait
         $this->stack[] = $kernel;
     }
 
-    public function callMiddlewareStack(ServerRequestInterface $request, ResponseInterface $response)
-    {
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface|null $response
+     *
+     * @return ResponseInterface
+     */
+    public function callMiddlewareStack(
+        ServerRequestInterface $request,
+        ResponseInterface $response = null
+    ): ResponseInterface {
         if (is_null($this->stack)) {
             $this->seedMiddlewareStack();
         }

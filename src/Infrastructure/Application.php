@@ -203,10 +203,10 @@ class Application
         list($controller, $action, $params) = $routeResolver->resolve($request->getMethod(), rawurldecode($request->getPathInfo()));
 
         if ($controller instanceof CommandController) {
-            return $controller->__invoke($request, $action, $params);
+            return $controller($request, $action, $params);
         }
 
-        return $controller->__invoke($request, $action, $params);
+        return $controller($request, $action, $params);
     }
 
     protected function handleException(Throwable $throwable)
@@ -214,6 +214,6 @@ class Application
         /* @var ExceptionHandlerInterface $handler */
         $handler = $this->container->get('app.http_exception_handler');
 
-        return $handler->__invoke($throwable);
+        return $handler($throwable);
     }
 }

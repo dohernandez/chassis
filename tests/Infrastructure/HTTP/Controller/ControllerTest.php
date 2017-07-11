@@ -44,7 +44,7 @@ class ControllerTest extends TestCase
         $controller->setAction($action);
         $controller->setParams([]);
 
-        $this->assertSame($response, $controller->__invoke($request, $action, []));
+        $this->assertSame($response, $controller($request, $action, []));
     }
 
     /**
@@ -165,7 +165,7 @@ class ControllerTest extends TestCase
         $controller->setAction($action);
         $controller->setParams([]);
 
-        $this->assertSame($response, $controller->__invoke($request, $action, []));
+        $this->assertSame($response, $controller($request, $action, []));
     }
 
     public function testThatItInvokeRespondNoContentResponse()
@@ -192,6 +192,6 @@ class ControllerTest extends TestCase
         $controller->setAction($action);
         $controller->setParams([]);
 
-        $this->assertSame($response, $controller->__invoke($request, $action, []));
+        $this->assertSame($response, $controller($request, $action, []));
     }
 }
