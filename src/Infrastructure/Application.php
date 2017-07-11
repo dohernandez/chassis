@@ -15,6 +15,8 @@ use UnexpectedValueException;
 
 class Application
 {
+    use MiddlewareAwareTrait;
+
     /**
      * @var Route[]
      */
@@ -115,6 +117,18 @@ class Application
     }
 
     /**
+     * Add middleware
+     *
+     * @param string|callable $callable
+     *
+     * @return static
+     */
+    public function add($callable)
+    {
+        return $this->addMiddleware(new DeferredCallable($callable, $this->container));
+    }
+
+    /**
      * @param Request $request
      * @return Response
      */
@@ -123,7 +137,7 @@ class Application
         try {
             $request = $this->getRequest($request);
 
-            $response = $this->handleRequest($request);
+            $response = $this->callMiddlewareStack($request);
         } catch (Throwable $throwable) {
             $response = $this->handleException($throwable);
         }
@@ -164,7 +178,7 @@ class Application
      * @param Request $request
      * @return Response
      */
-    protected function handleRequest(Request $request): Response
+    public function __invoke(Request $request): Response
     {
         $routeResolver = $this->getRouteResolver();
 

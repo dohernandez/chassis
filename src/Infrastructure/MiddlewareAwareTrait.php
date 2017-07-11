@@ -2,13 +2,14 @@
 
 namespace Chassis\Infrastructure;
 
-use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use SplDoublyLinkedList;
 use SplStack;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use UnexpectedValueException;
 
-class MiddlewareAwareTrait
+trait MiddlewareAwareTrait
 {
     /**
      * Middleware call stack
@@ -25,6 +26,11 @@ class MiddlewareAwareTrait
      */
     protected $middlewareLock = false;
 
+    /**
+     * @param callable $callable
+     *
+     * @return static
+     */
     protected function addMiddleware(callable $callable)
     {
         if ($this->middlewareLock) {
@@ -45,9 +51,9 @@ class MiddlewareAwareTrait
         ) {
             $result = call_user_func($callable, $request, $response, $next);
 
-            if ($result instanceof ResponseInterface === false) {
+            if ($result instanceof Response === false) {
                 throw new UnexpectedValueException(
-                    sprintf('Middleware must return instance of %s', ResponseInterface::class)
+                    sprintf('Middleware must return instance of %s', Response::class)
                 );
             }
 
@@ -78,15 +84,13 @@ class MiddlewareAwareTrait
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface|null $response
+     * @param Request $request
      *
-     * @return ResponseInterface
+     * @return Response
      */
     public function callMiddlewareStack(
-        ServerRequestInterface $request,
-        ResponseInterface $response = null
-    ): ResponseInterface {
+        Request $request
+    ): Response {
         if (is_null($this->stack)) {
             $this->seedMiddlewareStack();
         }
@@ -94,7 +98,7 @@ class MiddlewareAwareTrait
         $start = $this->stack->top();
 
         $this->middlewareLock = true;
-        $response = $start($request, $response);
+        $response = $start($request);
         $this->middlewareLock = false;
 
         return $response;
