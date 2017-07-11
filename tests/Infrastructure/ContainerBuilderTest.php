@@ -48,4 +48,19 @@ class ContainerBuilderTest extends TestCase
         $this->assertFileExists($containerFilename);
         $this->assertSame($base_dir, $container->getParameter('base_dir'));
     }
+
+    /**
+     * @depends testBuildContainerFromYML
+     */
+    public function testThatItBuildContainerFromClass()
+    {
+        $base_dir = __DIR__ . '/../sandbox';
+        $containerClass = self::CONTAINER_CLASS;
+        $containerFilename = self::formatContainerFilename($containerClass);
+        $this->assertFileExists($containerFilename);
+
+        $ymlServices = self::YML_SERVICES;
+        $container = (new ContainerBuilder(self::APP_NAME, $base_dir, $ymlServices, $containerClass))->build();
+        $this->assertSame($base_dir, $container->getParameter('base_dir'));
+    }
 }

@@ -3,6 +3,7 @@
 namespace Chassis\Infrastructure;
 
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Container as SymfonyContainer;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -80,9 +81,9 @@ class ContainerBuilder
     }
 
     /**
-     * @return SymfonyContainerBuilder
+     * @return SymfonyContainer
      */
-    public function build(): SymfonyContainerBuilder
+    public function build(): SymfonyContainer
     {
         if (!file_exists($this->containerClassPath)) {
             $container = $this->loadServicesFromYMLFile();
@@ -98,9 +99,9 @@ class ContainerBuilder
     }
 
     /**
-     * @return SymfonyContainerBuilder
+     * @return SymfonyContainer
      */
-    private function loadServicesFromYMLFile(): SymfonyContainerBuilder
+    private function loadServicesFromYMLFile(): SymfonyContainer
     {
         $container = new SymfonyContainerBuilder();
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
@@ -128,11 +129,11 @@ class ContainerBuilder
     }
 
     /**
-     * @param SymfonyContainerBuilder $container
+     * @param SymfonyContainer $container
      * @param string $containerFile
      * @param string $containerClass
      */
-    private function dumpContainer(SymfonyContainerBuilder $container, string $containerFile, string $containerClass)
+    private function dumpContainer(SymfonyContainer $container, string $containerFile, string $containerClass)
     {
         $dir = dirname($containerFile);
 
@@ -147,9 +148,9 @@ class ContainerBuilder
     }
 
     /**
-     * @return SymfonyContainerBuilder
+     * @return SymfonyContainer
      */
-    private function loadServicesFromContainerClass(): SymfonyContainerBuilder
+    private function loadServicesFromContainerClass(): SymfonyContainer
     {
         require_once $this->containerClassPath;
 
