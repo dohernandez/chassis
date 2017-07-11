@@ -3,12 +3,10 @@
 namespace Tests\Chassis\Infrastructure;
 
 use Chassis\Infrastructure\Exception\NotFoundException;
-use Chassis\Infrastructure\HTTP\Response\ResponseResolver;
 use Chassis\Infrastructure\Routing\Route;
 use Chassis\Infrastructure\Routing\RouteResolverInterface;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LogLevel;
 use stdClass;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\Chassis\MockHelpers;

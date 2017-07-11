@@ -46,10 +46,9 @@ class DeferredCallable
     /**
      * @param callable|string $toResolve
      *
-     * @return callable
-     *
      * @throws RuntimeException if the callable is not resolvable
      * @throws RuntimeException if the callable does not exist
+     * @return callable
      */
     private function resolveCallable($toResolve)
     {
@@ -68,7 +67,7 @@ class DeferredCallable
     }
 
     /**
-     * @param Callable $callable
+     * @param callable $callable
      *
      * @throws RuntimeException if the callable is not resolvable
      */

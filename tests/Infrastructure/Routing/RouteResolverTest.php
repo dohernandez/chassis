@@ -4,7 +4,6 @@ namespace Tests\Chassis\Infrastructure\Routing;
 
 use Chassis\Infrastructure\Exception\MethodNotAllowedHttpException;
 use Chassis\Infrastructure\Exception\NotFoundException;
-use Chassis\Infrastructure\Exception\NotFoundHttpException;
 use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use Chassis\Infrastructure\Routing\RouteResolver;
 use Closure;

@@ -7,7 +7,6 @@ use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use Chassis\Infrastructure\HTTP\HTTPExceptionHandler;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolver;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
-use Chassis\Infrastructure\Routing\Route;
 use Closure;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
