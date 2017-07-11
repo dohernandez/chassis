@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure;
 
-use Chassis\Infrastructure\Exception\ExceptionHandler;
+use Chassis\Infrastructure\Exception\ExceptionHandlerInterface;
 use Chassis\Infrastructure\HTTP\Controller\CommandController;
 use Chassis\Infrastructure\Routing\Route;
 use Chassis\Infrastructure\Routing\RouteResolverInterface;
@@ -211,7 +211,7 @@ class Application
 
     protected function handleException(Throwable $throwable)
     {
-        /* @var ExceptionHandler $handler */
+        /* @var ExceptionHandlerInterface $handler */
         $handler = $this->container->get('app.http_exception_handler');
 
         return $handler->__invoke($throwable);

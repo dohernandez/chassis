@@ -2,7 +2,7 @@
 
 namespace Chassis\Infrastructure\HTTP;
 
-use Chassis\Infrastructure\Exception\ExceptionHandler;
+use Chassis\Infrastructure\Exception\ExceptionHandlerInterface;
 use Chassis\Infrastructure\Exception\HttpExceptionInterface;
 use Chassis\Infrastructure\Exception\NotFoundException;
 use Chassis\Infrastructure\Exception\NotFoundHttpException;
@@ -12,7 +12,7 @@ use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-class HTTPExceptionHandler implements ExceptionHandler
+class HTTPExceptionHandler implements ExceptionHandlerInterface
 {
     const CONTEXT_ERROR_ID = 'unique_code';
     const DATA_MESSAGE = 'message';

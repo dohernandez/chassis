@@ -4,7 +4,7 @@ namespace Chassis\Infrastructure\Exception;
 
 use Symfony\Component\HttpFoundation\Response;
 
-interface ExceptionHandler
+interface ExceptionHandlerInterface
 {
     /**
      * @param \Throwable $throwable
