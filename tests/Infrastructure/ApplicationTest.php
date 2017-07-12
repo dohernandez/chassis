@@ -97,11 +97,11 @@ class ApplicationTest extends TestCase
 
     public function testThatItReturnResponse()
     {
-        $action = 'index';
-        $endpoint = '/';
-        $method = 'GET';
+        $action = $this->getAction();
+        $endpoint = $this->getEndPoint();
+        $method = $this->getMethod();
         $pathParams = [];
-        $route = new Route($method, $endpoint, $action);
+        $route = $this->createRoute($method, $endpoint, $action);
 
         $request = $this->mockRequest(function ($request) use ($endpoint, $method) {
             $request->getPathInfo()->shouldBeCalled()->willReturn($endpoint);
@@ -113,21 +113,16 @@ class ApplicationTest extends TestCase
         });
 
         $controller = $this->mockController($request, $response, $action, $pathParams);
-
         $controller->setTestCase($this);
 
-        $routeResolver = $this->mock(
-            RouteResolverInterface::class,
-            function ($routeResolver) use ($controller, $action, $endpoint, $method, $pathParams, $route) {
-                $routeResolver->resolve($method, $endpoint)->shouldBeCalled()->willReturn([
-                    $controller,
-                    $action,
-                    $pathParams,
-                ]);
-
-                $routeResolver->setRoutes([ $route ])->shouldBeCalled();
-            }
-        );
+        $routeResolver = $this->mockRouteResolver($this->getRouteResolverInit(
+            $controller,
+            $action,
+            $endpoint,
+            $method,
+            $pathParams,
+            $route
+        ));
 
         $application = $this->createApplication(function ($container) use ($routeResolver) {
             $container->has('app.route_resolver')->shouldBeCalled()->willReturn(true);
@@ -193,12 +188,12 @@ class ApplicationTest extends TestCase
 
     public function testThatItThrowAnExceptionDueRouteNotFound()
     {
-        $action = 'index';
+        $action = $this->getAction();
         $errorId = uniqid();
         $errorMessage = 'Resource not found.';
-        $endpoint = '/';
-        $method = 'GET';
-        $route = new Route($method, $endpoint, $action);
+        $endpoint = $this->getEndPoint();
+        $method = $this->getMethod();
+        $route = $this->createRoute($method, $endpoint, $action);
 
         $request = $this->mockRequest(function ($request) use ($endpoint, $method) {
             $request->getPathInfo()->shouldBeCalled()->willReturn($endpoint);
@@ -213,8 +208,7 @@ class ApplicationTest extends TestCase
         $responseResolver = $this->mockResponseResolver($response, $errorId, $errorMessage, Response::HTTP_NOT_FOUND);
         $exceptionHandler = $this->mockExceptionHandler($errorId, $logger, $responseResolver);
 
-        $routeResolver = $this->mock(
-            RouteResolverInterface::class,
+        $routeResolver = $this->mockRouteResolver(
             function ($routeResolver) use ($endpoint, $method, $route) {
                 $routeResolver->resolve($method, $endpoint)->shouldBeCalled()->willThrow(new NotFoundException());
 
@@ -230,6 +224,109 @@ class ApplicationTest extends TestCase
         });
 
         $application->addRoute($route);
+
+        $this->assertSame($response, $application->run($request));
+    }
+
+    public function testThatItAddMiddlewareToTheApplication()
+    {
+        $action = $this->getAction();
+        $endpoint = $this->getEndPoint();
+        $method = $this->getMethod();
+        $pathParams = [];
+        $route = $this->createRoute($method, $endpoint, $action);
+
+        $request = $this->mockRequest(function ($request) use ($endpoint, $method) {
+            $request->getPathInfo()->shouldBeCalled()->willReturn($endpoint);
+            $request->getMethod()->shouldBeCalled()->willReturn($method);
+        });
+
+        $response = $this->mockResponse(function ($response) {
+            $response->send()->shouldBeCalled()->willReturn($response);
+        });
+
+        $controller = $this->mockController($request, $response, $action, $pathParams);
+        $controller->setTestCase($this);
+
+        $routeResolver = $this->mockRouteResolver($this->getRouteResolverInit(
+            $controller,
+            $action,
+            $endpoint,
+            $method,
+            $pathParams,
+            $route
+        ));
+
+        $application = $this->createApplication(function ($container) use ($routeResolver) {
+            $container->has('app.route_resolver')->shouldBeCalled()->willReturn(true);
+            $container->get('app.route_resolver')->shouldBeCalled()->willReturn($routeResolver);
+        });
+        $application->addRoute($route);
+
+        $testCase = $this;
+        $application->add(function ($middleWareRequest, $middleWareResponse, $next) use (
+            $request,
+            $response,
+            $testCase
+        ) {
+            $testCase->assertSame($request, $middleWareRequest);
+            $testCase->assertNull($middleWareResponse);
+            $middleWareResponse = $next($middleWareRequest, $middleWareResponse);
+            $testCase->assertSame($response, $middleWareResponse);
+
+            return $middleWareResponse;
+        });
+
+        $this->assertSame($response, $application->run($request));
+    }
+
+    public function testThatItThrowAnExceptionMiddlewareNotReturnResponseToTheApplication()
+    {
+        $errorId = uniqid();
+        $errorMessage = sprintf('Middleware must return instance of %s', Response::class);
+        $action = $this->getAction();
+        $endpoint = $this->getEndPoint();
+        $method = $this->getMethod();
+        $pathParams = [];
+        $route = $this->createRoute($method, $endpoint, $action);
+
+        $request = $this->mockRequest(function ($request) use ($endpoint, $method) {
+            $request->getPathInfo()->shouldBeCalled()->willReturn($endpoint);
+            $request->getMethod()->shouldBeCalled()->willReturn($method);
+        });
+
+        $response = $this->mockResponse(function ($response) {
+            $response->send()->shouldBeCalled()->willReturn($response);
+        });
+
+        $controller = $this->mockController($request, $response, $action, $pathParams);
+        $controller->setTestCase($this);
+
+        $routeResolver = $this->mockRouteResolver($this->getRouteResolverInit(
+            $controller,
+            $action,
+            $endpoint,
+            $method,
+            $pathParams,
+            $route
+        ));
+
+        $logger = $this->mockLogger($errorId, $errorMessage);
+        $responseResolver = $this->mockResponseResolver($response, $errorId, $errorMessage);
+        $exceptionHandler = $this->mockExceptionHandler($errorId, $logger, $responseResolver);
+
+        $application = $this->createApplication(function ($container) use ($routeResolver, $exceptionHandler) {
+            $container->has('app.route_resolver')->shouldBeCalled()->willReturn(true);
+            $container->get('app.route_resolver')->shouldBeCalled()->willReturn($routeResolver);
+
+            $container->get('app.http_exception_handler')->shouldBeCalled()->willReturn($exceptionHandler);
+
+        });
+        $application->addRoute($route);
+
+        $application->add(function ($middleWareRequest, $middleWareResponse, $next) {
+            $next($middleWareRequest, $middleWareResponse);
+        });
 
         $this->assertSame($response, $application->run($request));
     }

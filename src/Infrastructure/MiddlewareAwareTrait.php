@@ -43,8 +43,8 @@ trait MiddlewareAwareTrait
 
         $next = $this->stack->top();
         $this->stack[] = function (
-            ServerRequestInterface $request,
-            ResponseInterface $response = null
+            Request $request,
+            Response $response = null
         ) use (
             $callable,
             $next
@@ -88,7 +88,7 @@ trait MiddlewareAwareTrait
      *
      * @return Response
      */
-    public function callMiddlewareStack(
+    protected function callMiddlewareStack(
         Request $request
     ): Response {
         if (is_null($this->stack)) {

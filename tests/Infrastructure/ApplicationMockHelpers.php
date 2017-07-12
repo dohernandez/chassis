@@ -7,6 +7,8 @@ use Chassis\Infrastructure\HTTP\Controller\ControllerInterface;
 use Chassis\Infrastructure\HTTP\HTTPExceptionHandler;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolver;
 use Chassis\Infrastructure\HTTP\Response\ResponseResolverInterface;
+use Chassis\Infrastructure\Routing\Route;
+use Chassis\Infrastructure\Routing\RouteResolverInterface;
 use Closure;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
@@ -180,5 +182,90 @@ trait ApplicationMockHelpers
                 ['unique_code' => $errorId]
             );
         });
+    }
+
+    /**
+     * @param callable $routeResolverInit
+     *
+     * @return RouteResolverInterface
+     */
+    protected function mockRouteResolver(callable $routeResolverInit):RouteResolverInterface
+    {
+        return $this->mock(RouteResolverInterface::class, $routeResolverInit);
+    }
+
+    /**
+     * @param ControllerInterface $controller
+     * @param string $action
+     * @param string $endpoint
+     * @param string $method
+     * @param array $pathParams
+     * @param Route $route
+     *
+     * @return Closure
+     */
+    protected function getRouteResolverInit(
+        ControllerInterface $controller,
+        string $action,
+        string $endpoint,
+        string $method,
+        array $pathParams,
+        Route $route
+    ): Closure {
+        return function ($routeResolver) use ($controller, $action, $endpoint, $method, $pathParams, $route) {
+            $routeResolver->resolve($method, $endpoint)->shouldBeCalled()->willReturn([
+                $controller,
+                $action,
+                $pathParams,
+            ]);
+
+            $routeResolver->setRoutes([$route])->shouldBeCalled();
+        };
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAction(): string
+    {
+        $action = 'index';
+
+        return $action;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEndPoint(): string
+    {
+        $endpoint = '/';
+
+        return $endpoint;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMethod(): string
+    {
+        $method = 'GET';
+
+        return $method;
+    }
+
+    /**
+     * @param string|null $method
+     * @param string|null $endpoint
+     * @param string|null $action
+     *
+     * @return Route
+     */
+    protected function createRoute(string $method = null, string $endpoint = null, string $action = null): Route
+    {
+        $method = $method ?? $this->getMethod();
+        $endpoint = $endpoint ?? $this->getEndPoint();
+        $action = $action ?? $this->getAction();
+
+        return new Route($method, $endpoint, $action);
     }
 }
