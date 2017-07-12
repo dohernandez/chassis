@@ -74,4 +74,18 @@ class DeferredCallableTest extends TestCase
 
         $deferredCallable($request, $response, null);
     }
+
+    public function testThatItThrowAnExceptionWhenInvokeWithNotCallable()
+    {
+        $request = $this->mockRequest();
+        $response = $this->mockResponse();
+        $class = 'NoCallableMiddlewareTest';
+
+        $deferredCallable = new DeferredCallable([$class]);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(sprintf('%s is not resolvable', json_encode([$class])));
+
+        $deferredCallable($request, $response, null);
+    }
 }
