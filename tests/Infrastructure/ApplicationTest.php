@@ -320,7 +320,6 @@ class ApplicationTest extends TestCase
             $container->get('app.route_resolver')->shouldBeCalled()->willReturn($routeResolver);
 
             $container->get('app.http_exception_handler')->shouldBeCalled()->willReturn($exceptionHandler);
-
         });
         $application->addRoute($route);
 

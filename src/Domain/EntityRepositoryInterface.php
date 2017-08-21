@@ -17,12 +17,12 @@ interface EntityRepositoryInterface
     public function save(Entity $entity);
 
     /**
-     * @param mixed $id
+     * @param mixed $entityId
      *
      * @throws NotFoundException if the entity cannot be found.
      * @return Entity
      */
-    public function find($id): Entity;
+    public function find($entityId): Entity;
 
     /**
      * @param array $criteria
@@ -46,10 +46,10 @@ interface EntityRepositoryInterface
     /**
      * Delete an existing entity.
      *
-     * @param Entity|string|int $idOrEntity
+     * @param Entity|string|int $entityIdOrEntity
      *
      * @throws NotFoundException if the specified id doesn't match any entity.
      * @throws \Exception if the entity cannot be deleted.
      */
-    public function delete($idOrEntity): void;
+    public function delete($entityIdOrEntity): void;
 }

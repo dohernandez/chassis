@@ -30,12 +30,13 @@ dependencies.autoload:
 	@docker run -it --rm -v $(PWD):/app -w /app prooph/composer:7.1 dump-autoload
 
 standards:
-	@printf "$(OK_COLOR)==> Checking code standards...$(NO_COLOR)\n"
-	@docker run -it --rm -v $(PWD):/app -w /app rcrosby256/php-cs-fixer fix --dry-run --diff
+	#@printf "$(OK_COLOR)==> Checking code standards...$(NO_COLOR)\n"
+	#@docker run -it --rm -v $(PWD):/app -w /app rcrosby256/php-cs-fixer fix --dry-run --diff
 	#@printf "$(OK_COLOR)==> Checking for code mess...$(NO_COLOR)\n"
-	#@docker run -it --rm -v $(PWD):/workspace shavenking/docker-phpmd src text ruleset.xml --suffixes php --exclude src/Infrastructure/Migrations
-	#@printf "$(OK_COLOR)==> Running static analysis...$(NO_COLOR)\n"
-	#@docker run -it --rm -v $(PWD):/app -w /app phpstan/phpstan analyse -c /app/phpstan.neon --level=4 /app/src
+	#@docker run -it --rm -v $(PWD):/workspace shavenking/docker-phpmd src text ruleset.xml \
+	#--suffixes php --exclude src/Infrastructure/Migrations --exclude src/helpers.php
+	@printf "$(OK_COLOR)==> Running static analysis...$(NO_COLOR)\n"
+	@docker run -it --rm -v $(PWD):/app -w /app phpstan/phpstan analyse -c /app/phpstan.neon --level=4 /app/src
 
 tail.log:
 	@printf "$(OK_COLOR)==> Tail log file ...$(NO_COLOR)\n"

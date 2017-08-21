@@ -33,12 +33,12 @@ class EntityDBALRepository implements EntityRepositoryInterface
     }
 
     /**
-     * @param mixed $id
+     * @param mixed $entityId
      *
      * @throws NotFoundException if the entity cannot be found.
      * @return Entity
      */
-    public function find($id): Entity
+    public function find($entityId): Entity
     {
         // TODO: Implement find() method.
     }
@@ -71,12 +71,12 @@ class EntityDBALRepository implements EntityRepositoryInterface
     /**
      * Delete an existing entity.
      *
-     * @param Entity|string|int $idOrEntity
+     * @param Entity|string|int $entityIdOrEntity
      *
      * @throws NotFoundException if the specified id doesn't match any entity.
      * @throws \Exception if the entity cannot be deleted.
      */
-    public function delete($idOrEntity): void
+    public function delete($entityIdOrEntity): void
     {
         // TODO: Implement delete() method.
     }

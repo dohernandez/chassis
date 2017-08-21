@@ -23,7 +23,6 @@ class DeferredCallableTest extends TestCase
         $response = $this->mockResponse();
         $testCase = $this;
 
-
         $deferredCallable = new DeferredCallable(function ($middleWareRequest, $middleWareResponse, $next) {
             return $next($middleWareRequest, $middleWareResponse);
         });
